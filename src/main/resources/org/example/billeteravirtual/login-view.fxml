@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.billeteravirtual.ui.LoginController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <Label text="Billetera Virtual">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <Label text="Ingrese su Cédula o Alias:" />
+    <TextField fx:id="txtIdentificador" maxWidth="200.0" promptText="Ej: 12345 o 'juan'" />
+    <Button text="Ingresar" onAction="#onBotonIngresarClick" defaultButton="true" style="-fx-background-color: #0078d7; -fx-text-fill: white;"/>
+
+    <Button text="Crear Cuenta Nueva" onAction="#onBotonRegistrarClick" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+
+    <Button text="Soy Administrador" onAction="#onBotonAdminClick" style="-fx-background-color: transparent; -fx-text-fill: #555; -fx-underline: true;"/>
+</VBox>

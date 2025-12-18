@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.billeteravirtual.ui.PanelAdminController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
+        <Label text="Panel de Administración" textFill="#333333">
+            <font><Font name="System Bold" size="24.0" /></font>
+        </Label>
+        <HBox HBox.hgrow="ALWAYS" /> <Button text="Cerrar Sesión" onAction="#onBotonSalirClick" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
+    </HBox>
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+
+        <Tab text="Usuarios Registrados">
+            <VBox spacing="10.0">
+                <padding><Insets top="10" right="0" bottom="0" left="0"/></padding>
+
+                <TableView fx:id="tablaUsuarios" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colCedula" text="Cédula" prefWidth="100"/>
+                        <TableColumn fx:id="colNombre" text="Nombre" prefWidth="150"/>
+                        <TableColumn fx:id="colAlias" text="Alias" prefWidth="100"/>
+                        <TableColumn fx:id="colEmail" text="Email" prefWidth="150"/>
+                        <TableColumn fx:id="colSaldo" text="Saldo Actual" prefWidth="100"/>
+                    </columns>
+                </TableView>
+
+                <Button text="Refrescar Lista" onAction="#cargarUsuarios" />
+            </VBox>
+        </Tab>
+
+        <Tab text="Historial Global">
+            <VBox spacing="10.0">
+                <padding><Insets top="10" right="0" bottom="0" left="0"/></padding>
+
+                <TableView fx:id="tablaTransacciones" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colID" text="ID Transacción" prefWidth="120"/>
+                        <TableColumn fx:id="colTipo" text="Tipo" prefWidth="100"/>
+                        <TableColumn fx:id="colMonto" text="Monto ($)" prefWidth="100"/>
+                        <TableColumn fx:id="colFecha" text="Fecha" prefWidth="150"/>
+                        <TableColumn fx:id="colUsuario" text="Usuario (Cédula)" prefWidth="120"/>
+                    </columns>
+                </TableView>
+
+                <Button text="Refrescar Historial" onAction="#cargarTransacciones" />
+            </VBox>
+        </Tab>
+
+        <Tab text="Gestión de Archivos">
+            <VBox alignment="CENTER" spacing="20.0">
+                <padding><Insets top="40"/></padding>
+                <Label text="Sistema de Persistencia (.dat)" textFill="#666">
+                    <font><Font size="18.0"/></font>
+                </Label>
+
+                <HBox alignment="CENTER" spacing="20">
+                    <Button text="Guardar Todo en Archivo" onAction="#onBotonGuardarArchivo" prefWidth="200" prefHeight="50" style="-fx-background-color: #2196f3; -fx-text-fill: white;"/>
+                    <Button text="Cargar desde Archivo" onAction="#onBotonCargarArchivo" prefWidth="200" prefHeight="50" style="-fx-background-color: #ff9800; -fx-text-fill: white;"/>
+                </HBox>
+
+                <Label text="Nota: Funcionalidad técnica delegada." style="-fx-font-style: italic;"/>
+            </VBox>
+        </Tab>
+
+    </TabPane>
+</VBox>

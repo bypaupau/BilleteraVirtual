@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.billeteravirtual.ui.RegistroController">
+    <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+
+    <Label text="Registro de Usuario">
+        <font><Font name="System Bold" size="20.0" /></font>
+    </Label>
+
+    <TextField fx:id="txtNombre" promptText="Nombre Completo" />
+    <TextField fx:id="txtCedula" promptText="Cédula" />
+    <TextField fx:id="txtEmail" promptText="Correo Electrónico" />
+    <TextField fx:id="txtAlias" promptText="Alias (Opcional)" />
+    <TextField fx:id="txtCiudad" promptText="Ciudad de Residencia" />
+
+    <Button text="Registrarme" onAction="#onBotonGuardarClick" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" prefWidth="200"/>
+    <Button text="Cancelar / Volver" onAction="#onBotonVolverClick" style="-fx-background-color: #f44336; -fx-text-fill: white;" prefWidth="200"/>
+</VBox>
