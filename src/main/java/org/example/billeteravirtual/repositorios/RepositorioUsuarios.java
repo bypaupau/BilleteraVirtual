@@ -56,8 +56,12 @@ public class RepositorioUsuarios {
     public static void cargarDesdeArchivo(String ruta) {
         try {
             Map<String, Usuario> cargado = servicioPersistencia.cargar(ruta);
+
             if (cargado != null) {
-                mapaUsuarios = cargado;
+
+                mapaUsuarios.putAll(cargado);
+
+                System.out.println("Usuarios cargados y fusionados con los actuales.");
             }
         } catch (Exception e) {
             System.out.println("No se pudo cargar usuarios: " + e.getMessage());

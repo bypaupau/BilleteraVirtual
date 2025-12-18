@@ -50,7 +50,7 @@ public class RepositorioTransacciones {
         try {
             Map<String, Transaccion> cargado = servicioPersistencia.cargar(ruta);
             if (cargado != null) {
-                mapaTransacciones = cargado;
+                mapaTransacciones.putAll(cargado);
             }
         } catch (Exception e) {
             System.out.println("No se pudo cargar transacciones: " + e.getMessage());
