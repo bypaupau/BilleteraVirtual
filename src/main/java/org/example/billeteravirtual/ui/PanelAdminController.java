@@ -2,21 +2,18 @@ package org.example.billeteravirtual.ui;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
-
 import org.example.billeteravirtual.agentes.Usuario;
 import org.example.billeteravirtual.transacciones.Transaccion;
 import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class PanelAdminController {
 
@@ -36,6 +33,8 @@ public class PanelAdminController {
     @FXML private TableColumn<Transaccion, String> colFecha;
     @FXML private TableColumn<Transaccion, String> colUsuario;
 
+    // YA NO NECESITAMOS LOS VBOX (vistaUsuarios, etc) PORQUE EL TABPANE LO HACE SOLO
+
     @FXML
     public void initialize() {
         configurarTablaUsuarios();
@@ -43,87 +42,76 @@ public class PanelAdminController {
     }
 
     private void configurarTablaUsuarios() {
-        // Enlazamos las columnas con los getters de la clase Usuario: getCedula(), getNombre()...
         colCedula.setCellValueFactory(new PropertyValueFactory<>("cedula"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colAlias.setCellValueFactory(new PropertyValueFactory<>("alias"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-
-        // El saldo es especial porque está dentro de 'billetera'
-        colSaldo.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.valueOf(cellData.getValue().getBilletera().getSaldo())));
+        colSaldo.setCellValueFactory(cell ->
+                new SimpleStringProperty(String.valueOf(cell.getValue().getBilletera().getSaldo())));
 
         cargarUsuarios();
     }
 
     private void configurarTablaTransacciones() {
-        // Enlazamos columnas con getters de Transaccion
         colID.setCellValueFactory(new PropertyValueFactory<>("idTransaccion"));
         colMonto.setCellValueFactory(new PropertyValueFactory<>("monto"));
-        colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha")); // JavaFX llama a toString() automáticamente
+        colTipo.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getClass().getSimpleName()));
 
-        // Tipo: Obtenemos el nombre de la clase (Deposito, Retiro, etc.)
-        colTipo.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getClass().getSimpleName()));
+        // Formato de fecha seguro
+        colFecha.setCellValueFactory(cell -> {
+            if(cell.getValue().getFecha() != null)
+                return new SimpleStringProperty(cell.getValue().getFecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            return new SimpleStringProperty("-");
+        });
 
-        // Usuario: Obtenemos la cédula del usuario dueño de la transacción
-        colUsuario.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getUsuario().getCedula()));
+        // Obtener cédula del usuario dueño de la transacción
+        colUsuario.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getUsuario().getCedula()));
 
         cargarTransacciones();
     }
 
     @FXML
     public void cargarUsuarios() {
-        // Convertimos la lista normal a una lista observable de JavaFX
-        ObservableList<Usuario> lista = FXCollections.observableArrayList(RepositorioUsuarios.obtenerTodos());
-        tablaUsuarios.setItems(lista);
+        tablaUsuarios.setItems(FXCollections.observableArrayList(RepositorioUsuarios.obtenerTodos()));
     }
 
     @FXML
     public void cargarTransacciones() {
-        ObservableList<Transaccion> lista = FXCollections.observableArrayList(RepositorioTransacciones.obtenerHistorialGlobal());
-        tablaTransacciones.setItems(lista);
+        tablaTransacciones.setItems(FXCollections.observableArrayList(RepositorioTransacciones.obtenerHistorialGlobal()));
     }
 
-    // --- GESTIÓN DE ARCHIVOS (Lo que hará tu compañero) ---
     @FXML
     protected void onBotonGuardarArchivo() {
         try {
-            // AHORA SÍ FUNCIONA PORQUE SON ESTÁTICOS
             RepositorioUsuarios.guardarEnArchivo();
             RepositorioTransacciones.guardarEnArchivo();
-            mostrarAlerta("Éxito", "Guardado en disco.");
+            mostrarAlerta("Éxito", "Datos guardados correctamente.");
         } catch (Exception e) {
-            mostrarAlerta("Error", "Fallo al guardar: " + e.getMessage());
+            mostrarAlerta("Error", "No se pudo guardar: " + e.getMessage());
         }
     }
 
     @FXML
     protected void onBotonCargarArchivo() {
         try {
-            // Suponiendo que los archivos se llamen así
             RepositorioUsuarios.cargarDesdeArchivo("usuarios.dat");
             RepositorioTransacciones.cargarDesdeArchivo("transacciones.dat");
-
-            // Refrescamos las tablas visuales
             cargarUsuarios();
             cargarTransacciones();
-
-            mostrarAlerta("Éxito", "Datos cargados del disco.");
+            mostrarAlerta("Éxito", "Datos cargados y tablas actualizadas.");
         } catch (Exception e) {
-            mostrarAlerta("Aviso de Desarrollo", "La funcionalidad de cargar la implementará tu compañero.\nError técnico: " + e.getMessage());
+            mostrarAlerta("Información", "Error al cargar (puede que los archivos no existan aún): " + e.getMessage());
         }
     }
 
-    // --- NAVEGACIÓN ---
     @FXML
     protected void onBotonSalirClick() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/billeteravirtual/login-view.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) tablaUsuarios.getScene().getWindow();
-            stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
+            // Navegación simple al login
+            tablaUsuarios.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

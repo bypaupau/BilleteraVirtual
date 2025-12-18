@@ -13,52 +13,45 @@ public class Validador {
     private static final String CEDULA_REGEX = "^[0-9]{10}$";
     private static final String NOMBRE_REGEX = "^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\\s]+$";
 
-    public Validador() {
-    }
+    public Validador() {}
 
-    //metodo estatico que valida el correo de acuerdo al formato Regex
-    public static void validarCorreo(String correo) throws EmailNoValidoException {
-        if (correo == null || correo.trim().isEmpty()) {
-            throw new EmailNoValidoException("El correo es obligatorio");
-        }
-        if (!Pattern.matches(EMAIL_REGEX, correo)) {
-            throw new EmailNoValidoException("El correo " + correo + " no tiene un formato válido.");
-        }
-    }
-
-    //metodo estatico que valida el alias de acuerdo al formato Regex
-    public static void validarAlias(String alias) throws AliasInvalidoException {
-        if (alias == null || alias.trim().isEmpty()) {
-            throw new AliasInvalidoException("El alias es obligatorio");
-        }
-        if (!Pattern.matches(ALIAS_REGEX, alias)) {
-            throw new AliasInvalidoException("El alias " + alias + " no tiene un formato válido.");
-        }
-    }
-
-    //metodo estatico que valida la cedula de acuerdo al formato Regex
-
-    public static void validarCedula(String cedula) throws CedulaInvalidaException {
-        if (cedula == null || cedula.trim().isEmpty()) {
-            throw new CedulaInvalidaException("La cédula es obligatoria");
+        public static void validarCedula(String cedula) {
+            if (cedula == null || cedula.length() != 10) {
+                throw new CedulaInvalidaException("La cédula debe tener exactamente 10 dígitos.");
+            }
+            if (!cedula.matches("\\d+")) { // Solo números
+                throw new CedulaInvalidaException("La cédula solo puede contener números.");
+            }
         }
 
-        // 1. Validar que sean solo números
-        if (!Pattern.matches(CEDULA_REGEX,cedula)) {
-            throw new CedulaInvalidaException("La cédula debe contener 10 dígitos y solo números.");
+        public static void validarCorreo(String email) {
+            if (email == null || !email.contains("@")) {
+                throw new EmailNoValidoException("El correo debe contener un '@'.");
+            }
+            if (!email.contains(".")) {
+                throw new EmailNoValidoException("El correo debe tener un dominio (ej: .com).");
+            }
+            if (email.length() < 5) {
+                throw new EmailNoValidoException("El correo es demasiado corto.");
+            }
         }
 
-    }
+        public static void validarAlias(String alias) {
+            if (alias == null || alias.length() < 3) {
+                throw new AliasInvalidoException("El alias debe tener al menos 3 caracteres.");
+            }
+            // Ejemplo de regla específica que pediste:
+            long numeros = alias.chars().filter(Character::isDigit).count();
+            if (numeros < 2) {
+                throw new AliasInvalidoException("Tu alias (" + alias + ") es muy débil. Agrega al menos 2 números.");
+            }
+        }
 
-    //metodo estatico que valida el nombre
-    public static void validarNombreCampo(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("Este campo es obligatorio");
+        public static void validarNombreCampo(String nombre) {
+            if (nombre == null || nombre.trim().isEmpty()) {
+                throw new RuntimeException("El nombre es obligatorio.");
+            }
         }
-        if (!Pattern.matches(NOMBRE_REGEX,nombre) ) {
-            throw new IllegalArgumentException("caracteres invalidos en el campo"); // Siga un patron regex
-        }
-    }
 
     public static void validarCiudad(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {

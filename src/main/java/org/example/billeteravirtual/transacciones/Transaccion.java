@@ -56,5 +56,8 @@ public abstract class Transaccion implements Serializable {
     public Usuario getUsuario() {
         return usuario;
     }
-}
+
+    public LocalDateTime getFecha() {return fechaHora;}
+    }
+
 

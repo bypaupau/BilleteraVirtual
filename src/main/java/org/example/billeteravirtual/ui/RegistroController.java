@@ -3,9 +3,8 @@ package org.example.billeteravirtual.ui;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
 import org.example.billeteravirtual.agentes.Usuario;
 import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
@@ -17,35 +16,30 @@ public class RegistroController {
     @FXML private TextField txtCedula;
     @FXML private TextField txtEmail;
     @FXML private TextField txtAlias;
-    @FXML private TextField txtCiudad; // Declarar variable nueva
-
+    // Si tienes txtCiudad en tu FXML, descomenta esto:
+    // @FXML private TextField txtCiudad;
 
     @FXML
     protected void onBotonGuardarClick() {
         try {
-            // Recolectar datos
             String nombre = txtNombre.getText();
             String cedula = txtCedula.getText();
             String email = txtEmail.getText();
             String alias = txtAlias.getText();
 
-            // Validar campos vacíos antes de llamar al Usuario
             if(nombre.isEmpty() || cedula.isEmpty() || email.isEmpty() || alias.isEmpty()) {
                 mostrarAlerta("Error", "Por favor llene todos los campos", Alert.AlertType.WARNING);
                 return;
             }
 
-            // Crear Usuario (Esto lanzará excepción si el email o cédula están mal)
+            // Crear Usuario
             Usuario nuevoUsuario = new Usuario(cedula, nombre, "Sin Ciudad", alias, email);
-
-            // Guardar en repositorio
             RepositorioUsuarios.guardarUsuario(nuevoUsuario);
 
-            mostrarAlerta("Éxito", "Cuenta creada. Tu Alias es: " + alias, Alert.AlertType.INFORMATION);
-            onBotonVolverClick(); // Volver al login
+            mostrarAlerta("Éxito", "Cuenta creada. Alias: " + alias, Alert.AlertType.INFORMATION);
+            onBotonVolverClick();
 
         } catch (Exception e) {
-            // AQUÍ ATRAPAMOS LOS ERRORES DE VALIDACIÓN (Ej: "Correo no válido")
             mostrarAlerta("Error de Registro", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -55,10 +49,8 @@ public class RegistroController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/billeteravirtual/login-view.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) txtNombre.getScene().getWindow();
-            Scene sceneActual = txtNombre.getScene(); // O el control que tengas a mano
-            stage.setScene(new Scene(root, sceneActual.getWidth(), sceneActual.getHeight()));
-
+            // Simplemente cambiamos la raíz de la escena actual
+            txtNombre.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

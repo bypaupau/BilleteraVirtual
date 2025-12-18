@@ -3,18 +3,14 @@ package org.example.billeteravirtual.ui;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import org.example.billeteravirtual.agentes.Usuario;
-import org.example.billeteravirtual.transacciones.*; // Importa todas las transacciones
+import org.example.billeteravirtual.transacciones.*;
 import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
 import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public class PanelUsuarioController {
 
@@ -31,43 +27,24 @@ public class PanelUsuarioController {
     private void actualizarDatos() {
         if (usuarioActivo != null) {
             lblNombre.setText("Hola, " + usuarioActivo.getNombre());
+            // Formato limpio para el saldo
             lblSaldo.setText(String.format("$ %.2f", usuarioActivo.getBilletera().getSaldo()));
         }
     }
 
     @FXML
     protected void onBotonDepositar() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Depositar");
-        dialog.setHeaderText("Monto a depositar:");
-        dialog.showAndWait().ifPresent(montoStr -> {
-            try {
-                double monto = Double.parseDouble(montoStr);
-                Deposito deposito = new Deposito(monto, usuarioActivo);
-                RepositorioTransacciones.guardarTransaccion(deposito);
-                actualizarDatos();
-                mostrarNotificacion("Éxito", "Depósito realizado.");
-            } catch (Exception e) {
-                mostrarNotificacion("Error", "Error al depositar: " + e.getMessage());
-            }
+        pedirMontoYEjecutar("Depositar", (monto) -> {
+            Deposito t = new Deposito(monto, usuarioActivo);
+            RepositorioTransacciones.guardarTransaccion(t);
         });
     }
 
     @FXML
     protected void onBotonRetirar() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Retirar");
-        dialog.setHeaderText("Monto a retirar:");
-        dialog.showAndWait().ifPresent(montoStr -> {
-            try {
-                double monto = Double.parseDouble(montoStr);
-                Retiro retiro = new Retiro(usuarioActivo, monto);
-                RepositorioTransacciones.guardarTransaccion(retiro);
-                actualizarDatos();
-                mostrarNotificacion("Éxito", "Retiro realizado.");
-            } catch (Exception e) {
-                mostrarNotificacion("Error", e.getMessage());
-            }
+        pedirMontoYEjecutar("Retirar", (monto) -> {
+            Retiro t = new Retiro(usuarioActivo, monto);
+            RepositorioTransacciones.guardarTransaccion(t);
         });
     }
 
@@ -76,25 +53,15 @@ public class PanelUsuarioController {
         TextInputDialog dialogCedula = new TextInputDialog();
         dialogCedula.setTitle("Transferir");
         dialogCedula.setHeaderText("Cédula o Alias destino:");
-
         dialogCedula.showAndWait().ifPresent(destinoStr -> {
             Usuario destino = RepositorioUsuarios.buscarPorCedula(destinoStr);
             if(destino == null) destino = RepositorioUsuarios.buscarPorAlias(destinoStr);
 
             if (destino != null) {
-                TextInputDialog dialogMonto = new TextInputDialog();
-                dialogMonto.setHeaderText("Monto a transferir a " + destino.getNombre());
                 Usuario finalDestino = destino;
-                dialogMonto.showAndWait().ifPresent(montoStr -> {
-                    try {
-                        double monto = Double.parseDouble(montoStr);
-                        Transferencia t = new Transferencia(monto, usuarioActivo, finalDestino);
-                        RepositorioTransacciones.guardarTransaccion(t);
-                        actualizarDatos();
-                        mostrarNotificacion("Éxito", "Transferencia enviada.");
-                    } catch (Exception e) {
-                        mostrarNotificacion("Error", e.getMessage());
-                    }
+                pedirMontoYEjecutar("Transferir a " + destino.getNombre(), (monto) -> {
+                    Transferencia t = new Transferencia(monto, usuarioActivo, finalDestino);
+                    RepositorioTransacciones.guardarTransaccion(t);
                 });
             } else {
                 mostrarNotificacion("Error", "Usuario no encontrado.");
@@ -108,43 +75,47 @@ public class PanelUsuarioController {
         dialog.setTitle("Pagar Servicio");
         dialog.setHeaderText("Elige el servicio:");
         dialog.showAndWait().ifPresent(servicio -> {
-            TextInputDialog dialogMonto = new TextInputDialog();
-            dialogMonto.setHeaderText("Monto a pagar:");
-            dialogMonto.showAndWait().ifPresent(montoStr -> {
-                try {
-                    double monto = Double.parseDouble(montoStr);
-                    PagoServicio pago = new PagoServicio(monto, usuarioActivo, servicio, "REF-" + System.currentTimeMillis());
-                    RepositorioTransacciones.guardarTransaccion(pago);
-                    actualizarDatos();
-                    mostrarNotificacion("Éxito", "Servicio pagado.");
-                } catch (Exception e) {
-                    mostrarNotificacion("Error", e.getMessage());
-                }
+            pedirMontoYEjecutar("Pagar " + servicio, (monto) -> {
+                PagoServicio t = new PagoServicio(monto, usuarioActivo, servicio, "REF-" + System.currentTimeMillis());
+                RepositorioTransacciones.guardarTransaccion(t);
             });
+        });
+    }
+
+    // Interfaz funcional simple para manejar las transacciones
+    private interface TransaccionAction {
+        void ejecutar(double monto) throws Exception;
+    }
+
+    private void pedirMontoYEjecutar(String titulo, TransaccionAction accion) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(titulo);
+        dialog.setHeaderText("Ingrese monto:");
+        dialog.showAndWait().ifPresent(montoStr -> {
+            try {
+                double monto = Double.parseDouble(montoStr);
+                accion.ejecutar(monto);
+                actualizarDatos();
+                mostrarNotificacion("Éxito", "Operación realizada.");
+            } catch (NumberFormatException e) {
+                mostrarNotificacion("Error", "Monto inválido.");
+            } catch (Exception e) {
+                mostrarNotificacion("Error", e.getMessage());
+            }
         });
     }
 
     @FXML
     protected void onBotonHistorial() {
         try {
-            StringBuilder texto = new StringBuilder();
-
-            // --- CORRECCIÓN AQUÍ ---
-            // Usamos el método que SÍ existe en tu repositorio y le pasamos la Cédula (String)
             List<Transaccion> lista = RepositorioTransacciones.obtenerHistorialPorUsuario(usuarioActivo.getCedula());
-            // -----------------------
-
-            if (lista.isEmpty()) {
-                texto.append("No hay movimientos.");
-            } else {
+            StringBuilder texto = new StringBuilder();
+            if (lista.isEmpty()) texto.append("No hay movimientos.");
+            else {
                 for (Transaccion t : lista) {
-                    // Usamos toString() simple por si getFecha() da problemas de formato
-                    texto.append(t.getClass().getSimpleName())
-                            .append(": $").append(t.getMonto())
-                            .append("\n");
+                    texto.append(t.getClass().getSimpleName()).append(": $").append(t.getMonto()).append("\n");
                 }
             }
-
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Historial");
             alert.setHeaderText(null);
@@ -152,9 +123,7 @@ public class PanelUsuarioController {
             area.setEditable(false);
             alert.getDialogPane().setContent(area);
             alert.showAndWait();
-
         } catch (Exception e) {
-            mostrarNotificacion("Error", "No se pudo cargar el historial: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -162,9 +131,7 @@ public class PanelUsuarioController {
     @FXML
     protected void onBotonInfo() {
         mostrarNotificacion("Mis Datos",
-                "Nombre: " + usuarioActivo.getNombre() + "\n" +
-                        "Cédula: " + usuarioActivo.getCedula() + "\n" +
-                        "Email: " + usuarioActivo.getEmail());
+                "Nombre: " + usuarioActivo.getNombre() + "\nCédula: " + usuarioActivo.getCedula());
     }
 
     @FXML
@@ -172,8 +139,8 @@ public class PanelUsuarioController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/billeteravirtual/login-view.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) lblNombre.getScene().getWindow();
-            stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
+            // Navegación simple: Volver al login
+            lblNombre.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

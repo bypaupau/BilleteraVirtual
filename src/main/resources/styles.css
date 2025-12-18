@@ -1,0 +1,125 @@
+/* styles.css - TEMA CLARO (Flat Design) - VERSIÓN ESTABLE */
+
+/* 1. Definición de Colores (Solo variables de color para evitar errores) */
+* {
+    -fx-primary-bg: #FFFFFF;        /* Fondo blanco puro */
+    -fx-secondary-bg: #F4F6F8;      /* Gris muy suave */
+    -fx-accent-color: #2196F3;      /* Azul principal */
+    -fx-text-main: #212121;         /* Texto oscuro */
+    -fx-text-secondary: #5F6368;    /* Texto secundario */
+    /* Eliminamos la variable -fx-radio-borde para evitar el error JavaFX */
+}
+
+/* 2. Estilos Generales */
+.root {
+    -fx-background-color: -fx-secondary-bg;
+    -fx-font-family: "Segoe UI", "Roboto", Helvetica, Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-text-main;
+}
+
+/* 3. Tipografía */
+.label {
+    -fx-text-fill: -fx-text-main;
+}
+
+.header-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-accent-color;
+}
+
+.balance-label {
+    -fx-font-size: 42px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #4CAF50;  /* Verde */
+}
+
+/* 4. Controles de Texto (Inputs) */
+.text-field, .password-field, .combo-box {
+    -fx-background-color: -fx-primary-bg;
+    -fx-border-color: #D1D5DB;
+
+    /* CAMBIO: Usamos valores directos (8px) en lugar de variable */
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+
+    -fx-padding: 10px;
+    -fx-text-fill: -fx-text-main;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused {
+    -fx-border-color: -fx-accent-color;
+    -fx-background-color: #FFFFFF;
+}
+
+/* Arreglo para el menú desplegable del ComboBox */
+.combo-box .list-cell, .combo-box-popup .list-view {
+    -fx-background-color: -fx-primary-bg;
+    -fx-text-fill: -fx-text-main;
+}
+
+/* 5. Botones (Estilo Plano/Flat) */
+.button {
+    -fx-background-color: -fx-accent-color;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+
+    /* CAMBIO: Usamos valores directos */
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+
+    -fx-cursor: hand;
+    -fx-padding: 10px 20px;
+    -fx-border-width: 0;
+}
+
+.button:hover {
+    -fx-background-color: #1976D2; /* Azul un poco más oscuro manual */
+}
+
+/* Botón especial 'Salir' o 'Cancelar' */
+.danger-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #D32F2F; /* Rojo */
+    -fx-border-color: #D32F2F;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+.danger-button:hover {
+    -fx-background-color: #FFEBEE; /* Rojo muy suave */
+}
+
+/* 6. Tablas */
+.table-view {
+    -fx-background-color: white;
+    -fx-table-cell-border-color: transparent;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #E0E0E0;
+}
+.table-view .column-header-background {
+    -fx-background-color: -fx-secondary-bg;
+    -fx-background-radius: 8px 8px 0 0;
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+}
+.table-row-cell:odd {
+    -fx-background-color: #FAFAFA;
+}
+.table-row-cell:selected {
+    -fx-background-color: #E3F2FD;
+    -fx-text-fill: -fx-text-main;
+}
+
+/* Contenedores simples */
+.content-card {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
