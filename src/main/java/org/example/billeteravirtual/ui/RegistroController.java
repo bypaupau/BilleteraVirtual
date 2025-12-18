@@ -17,7 +17,7 @@ public class RegistroController {
     @FXML private TextField txtEmail;
     @FXML private TextField txtAlias;
     // Si tienes txtCiudad en tu FXML, descomenta esto:
-    // @FXML private TextField txtCiudad;
+   @FXML private TextField txtCiudad;
 
     @FXML
     protected void onBotonGuardarClick() {
@@ -26,14 +26,16 @@ public class RegistroController {
             String cedula = txtCedula.getText();
             String email = txtEmail.getText();
             String alias = txtAlias.getText();
+            String ciudad = txtCiudad.getText();
 
-            if(nombre.isEmpty() || cedula.isEmpty() || email.isEmpty() || alias.isEmpty()) {
+
+            if(nombre.isEmpty() || cedula.isEmpty() || email.isEmpty() || alias.isEmpty() || ciudad.isEmpty())  {
                 mostrarAlerta("Error", "Por favor llene todos los campos", Alert.AlertType.WARNING);
                 return;
             }
 
             // Crear Usuario
-            Usuario nuevoUsuario = new Usuario(cedula, nombre, "Sin Ciudad", alias, email);
+            Usuario nuevoUsuario = new Usuario(cedula, nombre, ciudad, alias, email);
             RepositorioUsuarios.guardarUsuario(nuevoUsuario);
 
             mostrarAlerta("Éxito", "Cuenta creada. Alias: " + alias, Alert.AlertType.INFORMATION);

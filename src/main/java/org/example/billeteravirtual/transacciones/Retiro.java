@@ -15,10 +15,6 @@ public class Retiro extends Transaccion {
         usuario.getBilletera().agregarTransaccion(this);
     }
 
-//    @Override
-//    public boolean esIngreso() {
-//        return false;
-//    }
 
     @Override
     //Devuelve la información de la transacción sobrescribiendo el metodo de la clase padre

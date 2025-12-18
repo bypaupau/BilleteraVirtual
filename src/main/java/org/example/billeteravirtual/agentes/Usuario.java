@@ -19,11 +19,7 @@ public class Usuario implements Serializable{
     //Constructores
 
     public Usuario(String cedula, LocalDate fechaNacimiento, String nombre, String ciudad, String alias, String email) {
-        //Zona de validaciones
-        Validador.validarCedula(cedula);
-        Validador.validarNombreCampo(nombre);
-        Validador.validarAlias(alias);
-        Validador.validarCorreo(email);
+
 
         this.cedula = cedula;
         this.fechaNacimiento = fechaNacimiento;
@@ -35,11 +31,10 @@ public class Usuario implements Serializable{
     }
 
     public Usuario(String cedula, String nombre, String ciudad, String alias, String email) {
-
-        Validador.validarCedula(cedula);
         Validador.validarNombreCampo(nombre);
-        Validador.validarAlias(alias);
+        Validador.validarCedula(cedula);
         Validador.validarCorreo(email);
+        Validador.validarAlias(alias);
         Validador.validarCiudad(ciudad);
 
         // Inicialización

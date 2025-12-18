@@ -11,12 +11,6 @@ public class Deposito extends Transaccion {
         usuario.getBilletera().aumentarSaldo(monto);
         usuario.getBilletera().agregarTransaccion(this);
     }
-
-//    @Override
-//    public boolean esIngreso() {
-//        return true;
-//    }
-
     @Override
     //Devuelve la información de la transacción sobrescribiendo el metodo de la clase padre
     public void getInfoTransaccion() {
