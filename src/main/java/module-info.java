@@ -13,5 +13,8 @@ module org.example.billeteravirtual {
 
     opens org.example.billeteravirtual to javafx.fxml;
     opens org.example.billeteravirtual.ui to javafx.fxml;
+
+    opens org.example.billeteravirtual.agentes to javafx.base;
+    opens org.example.billeteravirtual.transacciones to javafx.base;
     exports org.example.billeteravirtual;
 }
