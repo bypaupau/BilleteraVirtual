@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent; // <--- IMPORTANTE: Necesario para los clics en los VBox
+import javafx.scene.input.MouseEvent;
 import org.example.billeteravirtual.agentes.Usuario;
 import org.example.billeteravirtual.transacciones.*;
 import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
@@ -56,7 +56,6 @@ public class PanelUsuarioController {
         pedirMontoYEjecutar("Depositar", (monto) -> {
             Deposito t = new Deposito(monto, usuarioActivo);
             // IMPORTANTE: Aquí validamos reglas de negocio si fuera necesario
-            t.validarTransaccion();
             // Guardamos
             RepositorioTransacciones.guardarTransaccion(t);
         });
@@ -72,7 +71,6 @@ public class PanelUsuarioController {
     void abrirVentanaRetiro(MouseEvent event) {
         pedirMontoYEjecutar("Retirar", (monto) -> {
             Retiro t = new Retiro(usuarioActivo, monto);
-            t.validarTransaccion(); // Validará si hay saldo suficiente
             RepositorioTransacciones.guardarTransaccion(t);
         });
     }
@@ -106,8 +104,6 @@ public class PanelUsuarioController {
 
                 pedirMontoYEjecutar("Transferir a " + destino.getNombre(), (monto) -> {
                     Transferencia t = new Transferencia(monto, usuarioActivo, finalDestino);
-                    t.validarTransaccion(); // Valida saldo
-
 
                     RepositorioTransacciones.guardarTransaccion(t);
                 });
@@ -174,16 +170,24 @@ public class PanelUsuarioController {
         dialog.showAndWait().ifPresent(montoStr -> {
             try {
                 double monto = Double.parseDouble(montoStr);
-                if (monto <= 0) throw new NumberFormatException(); // Validar positivos
+                if (monto <= 0) throw new NumberFormatException();
 
+                // 1. Ejecutar la lógica de la transacción (Retiro/Depósito/Transferencia)
                 accion.ejecutar(monto);
 
-                actualizarDatos(); // Refrescar la UI (saldo nuevo)
-                mostrarNotificacion("Éxito", "Operación realizada correctamente.");
+                // 2. ¡NUEVO! GUARDAR CAMBIOS INMEDIATAMENTE
+                // Guardamos tanto usuarios (para actualizar saldo) como transacciones
+                RepositorioUsuarios.guardarEnArchivo();
+                RepositorioTransacciones.guardarEnArchivo();
+
+                // 3. Refrescar interfaz
+                actualizarDatos();
+                mostrarNotificacion("Éxito", "Operación realizada y guardada.");
 
             } catch (NumberFormatException e) {
                 mostrarNotificacion("Error", "Monto inválido. Ingrese un número positivo.");
             } catch (Exception e) {
+                e.printStackTrace(); // Imprimir error en consola para depurar
                 mostrarNotificacion("Error", "No se pudo realizar: " + e.getMessage());
             }
         });

@@ -8,6 +8,7 @@ public class Transferencia extends Transaccion {
     //Para el futuro, se puede implementar una variable de monto maximo por transacción
     private Usuario usuarioDestino;
     private Usuario usuarioOrigen;
+    private static final long serialVersionUID = 3466615708913745383L;
 
     //constructor
     public Transferencia(double monto, Usuario usuarioOrigen, Usuario usuarioDestino) {
@@ -38,5 +39,9 @@ public class Transferencia extends Transaccion {
         System.out.println("De un valor de: $" + monto);
         System.out.println("Cédula del destinatario: " + this.usuarioDestino.getCedula());
         System.out.println("Cédula del transfiriente: " + this.usuarioOrigen.getCedula());
+    }
+
+    public Usuario getUsuarioDestino() {
+        return usuarioDestino;
     }
 }

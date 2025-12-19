@@ -3,6 +3,7 @@ package org.example.billeteravirtual.repositorios;
 import org.example.billeteravirtual.transacciones.Transaccion;
 import org.example.billeteravirtual.persistencia.Persistencia;
 import org.example.billeteravirtual.persistencia.Persistible;
+import org.example.billeteravirtual.transacciones.Transferencia;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,9 +48,22 @@ public class RepositorioTransacciones{
      */
     public static List<Transaccion> obtenerHistorialPorUsuario(String cedulaUsuario) {
         List<Transaccion> resultado = new ArrayList<>();
+
         for (Transaccion t : mapaTransacciones.values()) {
-            // Verificamos que la transacción tenga usuario y coincida la cédula
-            if (t.getUsuario() != null && t.getUsuario().getCedula().equals(cedulaUsuario)) {
+            // 1. Verificar si el usuario fue quien HIZO la transacción (origen)
+            boolean esEmisor = t.getUsuario() != null && t.getUsuario().getCedula().equals(cedulaUsuario);
+
+            // 2. Verificar si el usuario fue quien RECIBIÓ la transferencia (destino)
+            boolean esReceptor = false;
+            if (t instanceof Transferencia) {
+                Transferencia transfer = (Transferencia) t;
+                if (transfer.getUsuarioDestino() != null && transfer.getUsuarioDestino().getCedula().equals(cedulaUsuario)) {
+                    esReceptor = true;
+                }
+            }
+
+            // Si cumple cualquiera de las dos, se agrega al historial
+            if (esEmisor || esReceptor) {
                 resultado.add(t);
             }
         }
