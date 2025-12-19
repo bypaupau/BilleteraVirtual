@@ -10,25 +10,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// Quitamos implements para libertad estática
-public class RepositorioTransacciones {
+/**
+ * Clase estática encargada de gestionar el historial global de transacciones.
+ * Permite almacenar y recuperar transacciones, filtrando por usuario si es necesario.
+ */
+public class RepositorioTransacciones{
 
-    // 1. DATOS ESTÁTICOS
-    private static Map<String, Transaccion> mapaTransacciones = new HashMap<>();
+    /**
+     * Almacena una transacción en el historial global.
+     * @param t La transacción a guardar.
+     */    private static Map<String, Transaccion> mapaTransacciones = new HashMap<>();
 
-    // 2. PERSISTENCIA ESTÁTICA
     private static Persistible<Map<String, Transaccion>> servicioPersistencia = new Persistencia<>();
 
-    // --- MÉTODOS LÓGICA ---
-
+    /**
+     * Recupera todas las transacciones realizadas en el sistema.
+     * @return Lista completa de transacciones.
+     */
     public static void guardarTransaccion(Transaccion t) {
         mapaTransacciones.put(t.getIdTransaccion(), t);
     }
 
+    /**
+     * Recupera todas las transacciones realizadas en el sistema.
+     * @return Lista completa de transacciones.
+     */
     public static List<Transaccion> obtenerHistorialGlobal() {
         return new ArrayList<>(mapaTransacciones.values());
     }
 
+    /**
+     * Filtra y recupera las transacciones asociadas a un usuario específico.
+     *
+     * @param cedulaUsuario Cédula del usuario a consultar.
+     * @return Lista de transacciones donde el usuario participó.
+     */
     public static List<Transaccion> obtenerHistorialPorUsuario(String cedulaUsuario) {
         List<Transaccion> resultado = new ArrayList<>();
         for (Transaccion t : mapaTransacciones.values()) {

@@ -24,12 +24,6 @@ public class Transferencia extends Transaccion {
         usuarioDestino.getBilletera().agregarTransaccion(this);
     }
 
-//
-//    @Override
-//    public boolean esIngreso() {
-//        return false;
-//    }
-
     @Override
     public void validarTransaccion() {
         Validador.validarMonto(this.monto);//Verfica si el monto no es negativo o cero.

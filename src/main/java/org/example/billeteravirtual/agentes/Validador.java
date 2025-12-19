@@ -7,29 +7,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Clase utilitaria encargada de centralizar todas las validaciones lógicas y de formato del sistema.
+ * Contiene métodos estáticos para verificar correos, cédulas, alias, montos y saldos.
+ */
 public class Validador {
 
-    // Mantenemos el Regex para validar que la estructura sea correcta (letras @ algo. algo)
     private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 
     private static final String ALIAS_REGEX = "^[a-zA-Z0-9._]{5,15}$";
     private static final String CEDULA_REGEX = "^[0-9]{10}$";
     private static final String NOMBRE_REGEX = "^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\\s]+$";
 
-    // 1. NUEVA LISTA: Aquí defines qué dominios aceptas. ¡Agrega los que necesites!
     private static final List<String> DOMINIOS_PERMITIDOS = List.of(
             "gmail.com",
             "hotmail.com",
             "outlook.com",
             "yahoo.com",
             "icloud.com",
-            "epn.edu.ec" // Ejemplo: puedes agregar dominios institucionales
+            "epn.edu.ec"
     );
 
+    /**
+     * Constructor privado para evitar instanciación de esta clase utilitaria.
+     */
     public Validador() {
     }
 
-    // Método modificado
+    /**
+     * Valida que el correo electrónico tenga un formato correcto y pertenezca a un dominio permitido.
+     *
+     * @param correo Dirección de correo a verificar.
+     * @throws EmailNoValidoException Si el formato es incorrecto o el dominio no está en la lista blanca.
+     */
     public static void validarCorreo(String correo) throws EmailNoValidoException {
         if (correo == null || correo.trim().isEmpty()) {
             throw new EmailNoValidoException("El correo es obligatorio");
@@ -40,8 +50,7 @@ public class Validador {
             throw new EmailNoValidoException("El correo no tiene un formato válido (ej: usuario@dominio.com).");
         }
 
-        // Paso 2: Validar dominio permitido
-        // Extraemos lo que está después del '@'
+
         String dominio = correo.substring(correo.indexOf("@") + 1).toLowerCase();
 
         if (!DOMINIOS_PERMITIDOS.contains(dominio)) {
@@ -49,8 +58,12 @@ public class Validador {
         }
     }
 
-    // ... (El resto de tus métodos siguen igual) ...
-
+    /**
+     * Valida que el alias cumpla con la longitud y caracteres permitidos.
+     *
+     * @param alias Nombre de usuario.
+     * @throws AliasInvalidoException Si es nulo, vacío o no cumple el patrón regex.
+     */
     public static void validarAlias(String alias) throws AliasInvalidoException {
         if (alias == null || alias.trim().isEmpty()) {
             throw new AliasInvalidoException("El alias es obligatorio");
@@ -60,6 +73,12 @@ public class Validador {
         }
     }
 
+    /**
+     * Verifica que la cédula tenga exactamente 10 dígitos numéricos.
+     *
+     * @param cedula Número de identificación.
+     * @throws CedulaInvalidaException Si es nula o no cumple el patrón de 10 dígitos.
+     */
     public static void validarCedula(String cedula) throws CedulaInvalidaException {
         if (cedula == null || cedula.trim().isEmpty()) {
             throw new CedulaInvalidaException("La cédula es obligatoria");
@@ -69,6 +88,12 @@ public class Validador {
         }
     }
 
+    /**
+     * Valida que un nombre contenga solo letras y espacios.
+     *
+     * @param nombre Nombre a validar.
+     * @throws IllegalArgumentException Si el nombre está vacío o contiene caracteres inválidos.
+     */
     public static void validarNombreCampo(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre es obligatorio");
@@ -78,6 +103,12 @@ public class Validador {
         }
     }
 
+    /**
+     * Valida que la ciudad contenga solo letras.
+     *
+     * @param nombre Nombre de la ciudad.
+     * @throws IllegalArgumentException Si la ciudad contiene números o símbolos.
+     */
     public static void validarCiudad(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("La ciudad es obligatoria");
@@ -88,30 +119,50 @@ public class Validador {
         }
     }
 
-    public static void validarOpcion(int opcion, int cantidadOpciones) throws OpcionMenuNoValidoException {
-        if (opcion < 1 || opcion > cantidadOpciones) {
-            throw new OpcionMenuNoValidoException("Opción inválida. Debe ser entre 1 y " + cantidadOpciones);
-        }
-    }
-
+    /**
+     * Verifica si un usuario tiene saldo suficiente para realizar una operación.
+     *
+     * @param usuario Usuario que intenta realizar la transacción.
+     * @param monto Cantidad a descontar.
+     * @throws SaldoInsuficienteException Si el saldo en la billetera es menor al monto.
+     */
     public static void validarTransaccion(Usuario usuario, double monto) throws SaldoInsuficienteException {
         if (usuario.getBilletera().getSaldo() < monto) {
             throw new SaldoInsuficienteException("Saldo insuficiente para la transacción");
         }
     }
 
+    /**
+     * Verifica que el alias no esté registrado previamente en el sistema.
+     *
+     * @param alias Alias a verificar.
+     * @throws CredencialYaExistenteException Si el alias ya se encuentra en el repositorio.
+     */
     public static void validarUsuarioExistente(String alias) throws CredencialYaExistenteException {
         if (RepositorioUsuarios.existeAlias(alias)) {
             throw new CredencialYaExistenteException("El alias " + alias + " ya está en uso.");
         }
     }
 
+    /**
+     * Asegura que el monto de una operación sea positivo.
+     *
+     * @param monto Cantidad monetaria.
+     * @throws MontoInvalidoException Si el monto es menor o igual a cero.
+     */
     public static void validarMonto(double monto) throws MontoInvalidoException {
         if (monto <= 0) {
             throw new MontoInvalidoException("El monto no puede ser negativo ni cero.");
         }
     }
 
+    /**
+     * Verifica que la cédula no esté ya registrada asociada a otro usuario.
+     *
+     * @param usuariosRegistrados Mapa actual de usuarios.
+     * @param nuevoUsuario Objeto usuario que se intenta registrar.
+     * @throws CredencialYaExistenteException Si la cédula ya existe en el mapa.
+     */
     public static void validarCedulaNoRegistrada(Map<String, Usuario> usuariosRegistrados, Usuario nuevoUsuario) {
         if (usuariosRegistrados.containsKey(nuevoUsuario.getCedula())) {
             throw new CredencialYaExistenteException("La cédula " + nuevoUsuario.getCedula() + " ya está registrada.");

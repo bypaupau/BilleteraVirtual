@@ -143,7 +143,6 @@ public class PanelAdminController {
         tablaTransacciones.getItems().clear();
     }
 
-    // --- ACCIONES DE BÚSQUEDA ---
 
     @FXML
     public void accionBuscarUsuarioCedula() {
@@ -170,6 +169,10 @@ public class PanelAdminController {
         }
     }
 
+    /**
+     * Filtra la tabla de transacciones buscando por ID específico.
+     * Se ejecuta al hacer clic en el botón de búsqueda de transacciones.
+     */
     @FXML
     public void accionBuscarTransaccion() {
         String id = txtBuscarTransaccion.getText().trim();

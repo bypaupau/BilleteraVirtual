@@ -2,6 +2,12 @@ package org.example.billeteravirtual.persistencia;
 
 import java.io.*;
 
+/**
+ * Implementación concreta de la persistencia utilizando serialización binaria de Java.
+ * Permite guardar y cargar objetos que implementen la interfaz Serializable.
+ *
+ * @param <T> Tipo de objeto a persistir.
+ */
 public class Persistencia<T> implements Persistible<T> {
 
     @Override
