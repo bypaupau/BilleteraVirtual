@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import org.example.billeteravirtual.agentes.Usuario;
+import org.example.billeteravirtual.agentes.Validador;
 import org.example.billeteravirtual.transacciones.*;
 import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
 import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
@@ -115,7 +116,7 @@ public class PanelUsuarioController {
 
     @FXML
     void abrirVentanaHistorial(MouseEvent event) {
-        onBotonHistorial(); // Reutilizamos la lógica que ya tenías
+        onBotonServicios(); // Reutilizamos la lógica que ya tenías
     }
 
     /**
@@ -139,7 +140,7 @@ public class PanelUsuarioController {
                 }
             }
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Historial de Movimientos");
+            alert.setTitle("Pago de Servicios");
             alert.setHeaderText(null);
             TextArea area = new TextArea(texto.toString());
             area.setEditable(false);
@@ -152,6 +153,30 @@ public class PanelUsuarioController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    protected void onBotonServicios(){
+        TextInputDialog dialogServicio = new TextInputDialog();
+        dialogServicio.setTitle("Pago de Servicio");
+        dialogServicio.setHeaderText("Digite servicio a pagar (Ej: luz): ");
+        dialogServicio.setContentText(null);
+
+        dialogServicio.showAndWait().ifPresent(servicio -> {
+            try {
+                // Validamos que el servicio este disponible
+                String nombreEmpresa = Validador.validarServicio(servicio);
+
+                pedirMontoYEjecutar("Pago de servicio a " + nombreEmpresa, (monto) -> {
+                    // Crea la transacción de pago
+                    PagoServicio pagoServicio = new PagoServicio(monto, usuarioActivo, nombreEmpresa, servicio);
+
+                    // Guarda y actualiza
+                    RepositorioTransacciones.guardarTransaccion(pagoServicio);
+                });
+            } catch (IllegalArgumentException e) {
+                mostrarNotificacion("Error", e.getMessage());
+            }
+        });
     }
 
     // --- UTILIDADES ---

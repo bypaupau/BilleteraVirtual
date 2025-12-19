@@ -5,6 +5,7 @@ import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -168,4 +169,42 @@ public class Validador {
             throw new CredencialYaExistenteException("La cédula " + nuevoUsuario.getCedula() + " ya está registrada.");
         }
     }
+
+
+    private static final Map<String, String> SERVICIOS_DISPONIBLES = Map.of(
+            "agua", "Interagua",
+            "luz", "CNEL",
+            "internet", "Netlife"
+    );
+
+    /**
+     * Verifica que el correo no esté ya asociado a otro usuario.
+     *
+     * @param correo String actual del correo del usuario.
+     * @throws CredencialYaExistenteException si el correo ya existe en el mapa.
+     */
+    public static void validarCorreoNoRegistrado(String correo) {
+        for(Usuario u: RepositorioUsuarios.obtenerTodos()) {
+            if (Objects.equals(u.getEmail(), correo)) {
+                throw new CredencialYaExistenteException("El correo " + correo + " ya está registrado.");
+            }
+        }
+    }
+
+    public static String validarServicio(String servicio) {
+        if (servicio == null) {
+            throw new IllegalArgumentException("El servicio no puede estar vacío.");
+        }
+        String servicioNormalizado = servicio.toLowerCase().trim();
+
+        if (!SERVICIOS_DISPONIBLES.containsKey(servicioNormalizado)) {
+            throw new IllegalArgumentException("Servicio no disponible. Elija entre: " + SERVICIOS_DISPONIBLES.keySet());
+        }
+
+        return SERVICIOS_DISPONIBLES.get(servicioNormalizado);
+    }
+
+
+
+
 }

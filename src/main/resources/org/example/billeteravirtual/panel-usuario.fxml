@@ -78,8 +78,8 @@
                                 <Label text="☰" textFill="#9333EA" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
                             </StackPane>
                             <VBox spacing="4" alignment="CENTER_LEFT">
-                                <Label text="Historial" styleClass="action-card-title"/>
-                                <Label text="Revisa tus movimientos" styleClass="action-card-desc" wrapText="true"/>
+                                <Label text="Pago Servicios" styleClass="action-card-title"/>
+                                <Label text="Realiza los pagos de servicios" styleClass="action-card-desc" wrapText="true"/>
                             </VBox>
                         </HBox>
                     </VBox>

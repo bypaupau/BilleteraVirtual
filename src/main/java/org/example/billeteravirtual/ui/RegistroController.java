@@ -39,7 +39,7 @@ public class RegistroController {
      */
     @FXML
     protected void onBotonGuardarClick() {
-        StringBuilder errores = new StringBuilder(); // Aquí guardaremos los mensajes
+        StringBuilder errores = new StringBuilder();
 
         String nombre = txtNombre.getText();
         String cedula = txtCedula.getText();
@@ -47,54 +47,44 @@ public class RegistroController {
         String alias = txtAlias.getText();
         String ciudad = txtCiudad.getText();
 
-        // 1. Validamos campo por campo "atrapando" el error para que no detenga el flujo
+        // --- VALIDACIONES ---
+
+        try { Validador.validarNombreCampo(nombre); }
+        catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
+
+        // Aquí puedes comentar la validación de cédula si ya no la quieren usar
+        try { Validador.validarCedula(cedula); }
+        catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
+
+        try { Validador.validarCorreo(email); } // Valida el formato (@gmail.com etc)
+        catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
+
+        // ¡¡ESTA ES LA NUEVA VALIDACIÓN DE TU AMIGO!!
+        // Verifica que el correo no pertenezca a otro usuario
         try {
-            Validador.validarNombreCampo(nombre);
+            Validador.validarCorreoNoRegistrado(email);
         } catch (RuntimeException e) {
             errores.append("- ").append(e.getMessage()).append("\n");
         }
+        // -----------------------------------------------------------
 
-        try {
-            Validador.validarCedula(cedula);
-        } catch (RuntimeException e) {
-            errores.append("- ").append(e.getMessage()).append("\n");
-        }
+        try { Validador.validarAlias(alias); }
+        catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
 
-        try {
-            Validador.validarCorreo(email);
-        } catch (RuntimeException e) {
-            errores.append("- ").append(e.getMessage()).append("\n");
-        }
+        try { Validador.validarUsuarioExistente(alias); } // Valida que el alias no exista
+        catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
 
-        try {
-            Validador.validarAlias(alias);
-        } catch (RuntimeException e) {
-            errores.append("- ").append(e.getMessage()).append("\n");
-        }
+        try { Validador.validarCiudad(ciudad); }
+        catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
 
-        // --- NUEVO: VALIDAR QUE EL ALIAS NO EXISTA YA ---
-        try {
-            Validador.validarUsuarioExistente(alias);
-        } catch (RuntimeException e) {
-            errores.append("- ").append(e.getMessage()).append("\n");
-        }
+        // --- FIN VALIDACIONES ---
 
-        try {
-            Validador.validarCiudad(ciudad);
-        } catch (RuntimeException e) {
-            errores.append("- ").append(e.getMessage()).append("\n");
-        }
-
-        // 2. Si hay errores acumulados, mostramos la alerta y NO creamos el usuario
         if (errores.length() > 0) {
             mostrarAlerta("Errores de Validación", errores.toString(), Alert.AlertType.WARNING);
-            return; // Detenemos aquí
+            return;
         }
 
-        // 3. Si llegamos aquí, todo está bien. Creamos el usuario sin miedo.
         try {
-            // Como ya validamos arriba, esto no debería fallar por formato,
-            // pero sí podría fallar por lógica de negocio (ej: alias repetido en la BD)
             Usuario nuevoUsuario = new Usuario(cedula, nombre, ciudad, alias, email);
             RepositorioUsuarios.guardarUsuario(nuevoUsuario);
 

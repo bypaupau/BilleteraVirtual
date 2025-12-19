@@ -14,7 +14,6 @@ public class AplicacionBilletera extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // Carga la vista de Login como ya lo hacías
         FXMLLoader fxmlLoader = new FXMLLoader(AplicacionBilletera.class.getResource("login-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 700, 650);
 
@@ -28,7 +27,6 @@ public class AplicacionBilletera extends Application {
         stage.show();
     }
 
-    // 1. CARGAR DATOS AL INICIAR
     @Override
     public void init() throws Exception {
         System.out.println("Iniciando aplicación... cargando datos.");
@@ -37,7 +35,6 @@ public class AplicacionBilletera extends Application {
         RepositorioTransacciones.cargarDesdeArchivo(Paths.ARCHIVO_TRANSACCIONES);
     }
 
-    // 2. GUARDAR DATOS AL CERRAR
     @Override
     public void stop() throws Exception {
         System.out.println("Cerrando aplicación... guardando datos.");

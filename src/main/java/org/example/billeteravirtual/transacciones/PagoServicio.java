@@ -10,25 +10,24 @@ import org.example.billeteravirtual.agentes.Validador;
  */
 public class PagoServicio extends Transaccion {
     //atributos
-    private String empresa, tipoServicio;
-
+    private String nombreEmpresa;
+    private String tipoServicio;
     /**
      * Crea una nueva transacción de pago de servicios.
      *
      * @param monto Cantidad a pagar.
      * @param usuario Usuario que realiza el pago.
-     * @param empresa Nombre de la empresa que recibe el pago.
+     * @param nombreEmpresa Nombre de la empresa que recibe el pago.
      * @param tipoServicio Tipo de servicio (Luz, Agua, Internet, etc.).
      */
-    public PagoServicio(double monto, Usuario usuario, String empresa, String tipoServicio) {
-        super(monto, usuario);
-        this.empresa = empresa;
+    public PagoServicio(double monto, Usuario usuario, String nombreEmpresa, String tipoServicio) {
+        super(monto, usuario); // Llama al constructor de Transaccion
+        this.nombreEmpresa = nombreEmpresa;
         this.tipoServicio = tipoServicio;
 
-        validarTransaccion();
-
-        usuario.getBilletera().restarSaldo(monto);
-        usuario.getBilletera().agregarTransaccion(this);
+        validarTransaccion(); // Valida saldo
+        usuario.getBilletera().restarSaldo(monto); // Descuenta
+        usuario.getBilletera().agregarTransaccion(this); // Guarda en historial local
     }
 
     /**
@@ -47,7 +46,7 @@ public class PagoServicio extends Transaccion {
     @Override
     public void getInfoTransaccion() {
         super.getInfoTransaccion();
-        System.out.println("Empresa:" + this.empresa);
+        System.out.println("Empresa:" + this.nombreEmpresa);
         System.out.println("Servicio:" + this.tipoServicio);
     }
 }

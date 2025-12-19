@@ -32,7 +32,7 @@ public class LoginController {
      */
     @FXML
     protected void onBotonIngresarClick() {
-        String dato = txtIdentificador.getText();
+        String dato = txtIdentificador.getText().trim();
         Usuario u = RepositorioUsuarios.buscarPorCedula(dato);
         if (u == null) {
             u = RepositorioUsuarios.buscarPorAlias(dato);
