@@ -200,7 +200,7 @@ public class PanelUsuarioController {
 
         dialog.showAndWait().ifPresent(montoStr -> {
             try {
-                double monto = Double.parseDouble(montoStr);
+                double monto = Double.parseDouble(montoStr.replace(",", "."));
                 if (monto <= 0) throw new NumberFormatException();
 
                 // 1. Ejecutar la lógica de la transacción (Retiro/Depósito/Transferencia)
