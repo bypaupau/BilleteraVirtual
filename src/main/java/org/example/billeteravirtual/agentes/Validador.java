@@ -99,8 +99,12 @@ public class Validador {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre es obligatorio");
         }
+        // Validar caracteres inválidos (números/símbolos)
         if (!Pattern.matches(NOMBRE_REGEX, nombre)) {
-            throw new IllegalArgumentException("El nombre contiene caracteres inválidos.");
+            throw new IllegalArgumentException("El nombre solo puede contener letras.");
+        }
+        if (!nombre.trim().contains(" ")) {
+            throw new IllegalArgumentException("Debes ingresar al menos un Nombre y un Apellido.");
         }
     }
 

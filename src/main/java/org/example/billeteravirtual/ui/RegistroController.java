@@ -41,13 +41,15 @@ public class RegistroController {
     protected void onBotonGuardarClick() {
         StringBuilder errores = new StringBuilder();
 
-        String nombre = txtNombre.getText();
-        String cedula = txtCedula.getText();
-        String email = txtEmail.getText();
-        String alias = txtAlias.getText();
-        String ciudad = txtCiudad.getText();
+        String nombreRaw = txtNombre.getText().trim();
+        String nombre = formatearTitleCase(nombreRaw);
 
-        // --- VALIDACIONES ---
+        String ciudadRaw = txtCiudad.getText().trim();
+        String ciudad = formatearTitleCase(ciudadRaw);
+
+        String cedula = txtCedula.getText().trim();
+        String email = txtEmail.getText().trim();
+        String alias = txtAlias.getText().trim();
 
         try { Validador.validarNombreCampo(nombre); }
         catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
@@ -59,14 +61,12 @@ public class RegistroController {
         try { Validador.validarCorreo(email); } // Valida el formato (@gmail.com etc)
         catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
 
-        // ¡¡ESTA ES LA NUEVA VALIDACIÓN DE TU AMIGO!!
-        // Verifica que el correo no pertenezca a otro usuario
+
         try {
             Validador.validarCorreoNoRegistrado(email);
         } catch (RuntimeException e) {
             errores.append("- ").append(e.getMessage()).append("\n");
         }
-        // -----------------------------------------------------------
 
         try { Validador.validarAlias(alias); }
         catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
@@ -77,7 +77,6 @@ public class RegistroController {
         try { Validador.validarCiudad(ciudad); }
         catch (RuntimeException e) { errores.append("- ").append(e.getMessage()).append("\n"); }
 
-        // --- FIN VALIDACIONES ---
 
         if (errores.length() > 0) {
             mostrarAlerta("Errores de Validación", errores.toString(), Alert.AlertType.WARNING);
@@ -87,6 +86,7 @@ public class RegistroController {
         try {
             Usuario nuevoUsuario = new Usuario(cedula, nombre, ciudad, alias, email);
             RepositorioUsuarios.guardarUsuario(nuevoUsuario);
+            RepositorioUsuarios.guardarEnArchivo();
 
             mostrarAlerta("Éxito", "Cuenta creada correctamente.", Alert.AlertType.INFORMATION);
             onBotonVolverClick();
@@ -117,5 +117,21 @@ public class RegistroController {
         alert.setHeaderText(null);
         alert.setContentText(contenido);
         alert.showAndWait();
+    }
+
+    private String formatearTitleCase(String texto) {
+        if (texto == null || texto.isEmpty()) return texto;
+
+        String[] palabras = texto.split("\\s+");
+        StringBuilder resultado = new StringBuilder();
+
+        for (String palabra : palabras) {
+            if (!palabra.isEmpty()) {
+                resultado.append(Character.toUpperCase(palabra.charAt(0)))
+                        .append(palabra.substring(1).toLowerCase())
+                        .append(" ");
+            }
+        }
+        return resultado.toString().trim();
     }
 }
