@@ -29,6 +29,11 @@ public class Transferencia extends Transaccion {
     public void validarTransaccion() {
         Validador.validarMonto(this.monto);//Verfica si el monto no es negativo o cero.
         Validador.validarTransaccion(this.usuarioOrigen,this.monto); //Verifica si existe el saldo para realizar la transferencia
+
+        if (this.usuarioOrigen.getCedula().equals(this.usuarioDestino.getCedula())) {
+            throw new IllegalArgumentException("No puedes transferirte dinero a ti mismo.");
+        }
+
     }
 
     @Override
