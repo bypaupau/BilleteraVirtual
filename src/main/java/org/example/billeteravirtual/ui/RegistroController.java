@@ -55,6 +55,13 @@ public class RegistroController {
             errores.append("- ").append(e.getMessage()).append("\n");
         }
 
+        // --- NUEVO: VALIDAR QUE EL ALIAS NO EXISTA YA ---
+        try {
+            Validador.validarUsuarioExistente(alias);
+        } catch (RuntimeException e) {
+            errores.append("- ").append(e.getMessage()).append("\n");
+        }
+
         try {
             Validador.validarCiudad(ciudad);
         } catch (RuntimeException e) {

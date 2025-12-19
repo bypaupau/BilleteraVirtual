@@ -1,12 +1,19 @@
 package org.example.billeteravirtual.ui;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.example.billeteravirtual.agentes.Usuario;
 import org.example.billeteravirtual.transacciones.Transaccion;
 import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
@@ -14,10 +21,31 @@ import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class PanelAdminController {
 
-    // --- TABLA USUARIOS ---
+    @FXML private VBox sidebarMenu;
+    @FXML private VBox menuContent;
+
+    // Vistas principales
+    @FXML private VBox vistaUsuarios;
+    @FXML private VBox vistaTransacciones;
+
+    // Contenedores de búsqueda
+    @FXML private HBox contenedorBusquedaCedula;
+    @FXML private HBox contenedorBusquedaAlias; // <--- NUEVO
+    @FXML private HBox contenedorBusquedaTransacciones;
+
+    @FXML private Label lblTituloUsuarios;
+    @FXML private Label lblTituloTransacciones;
+
+    // Campos de texto
+    @FXML private TextField txtBuscarCedula;
+    @FXML private TextField txtBuscarAlias; // <--- NUEVO
+    @FXML private TextField txtBuscarTransaccion;
+
+    // Tabla Usuarios
     @FXML private TableView<Usuario> tablaUsuarios;
     @FXML private TableColumn<Usuario, String> colCedula;
     @FXML private TableColumn<Usuario, String> colNombre;
@@ -25,7 +53,7 @@ public class PanelAdminController {
     @FXML private TableColumn<Usuario, String> colEmail;
     @FXML private TableColumn<Usuario, String> colSaldo;
 
-    // --- TABLA TRANSACCIONES ---
+    // Tabla Transacciones
     @FXML private TableView<Transaccion> tablaTransacciones;
     @FXML private TableColumn<Transaccion, String> colID;
     @FXML private TableColumn<Transaccion, String> colTipo;
@@ -33,95 +61,182 @@ public class PanelAdminController {
     @FXML private TableColumn<Transaccion, String> colFecha;
     @FXML private TableColumn<Transaccion, String> colUsuario;
 
-    // YA NO NECESITAMOS LOS VBOX (vistaUsuarios, etc) PORQUE EL TABPANE LO HACE SOLO
-
     @FXML
     public void initialize() {
         configurarTablaUsuarios();
         configurarTablaTransacciones();
+        configurarAnimacionMenu();
+        mostrarTodosUsuarios();
     }
 
+    // --- MENÚ: USUARIOS ---
+
+    @FXML
+    public void mostrarTodosUsuarios() {
+        cambiarVista(true); // true = usuarios
+        lblTituloUsuarios.setText("Todos los Usuarios");
+
+        // Ocultar barras de búsqueda
+        contenedorBusquedaCedula.setVisible(false); contenedorBusquedaCedula.setManaged(false);
+        contenedorBusquedaAlias.setVisible(false); contenedorBusquedaAlias.setManaged(false);
+
+        cargarDatosUsuarios();
+    }
+
+    @FXML
+    public void mostrarBusquedaCedula() {
+        cambiarVista(true);
+        lblTituloUsuarios.setText("Buscar por Cédula");
+
+        contenedorBusquedaCedula.setVisible(true); contenedorBusquedaCedula.setManaged(true);
+        contenedorBusquedaAlias.setVisible(false); contenedorBusquedaAlias.setManaged(false);
+
+        txtBuscarCedula.clear();
+        tablaUsuarios.getItems().clear();
+    }
+
+    @FXML
+    public void mostrarBusquedaAlias() {
+        cambiarVista(true);
+        lblTituloUsuarios.setText("Buscar por Alias");
+
+        contenedorBusquedaCedula.setVisible(false); contenedorBusquedaCedula.setManaged(false);
+        contenedorBusquedaAlias.setVisible(true); contenedorBusquedaAlias.setManaged(true);
+
+        txtBuscarAlias.clear();
+        tablaUsuarios.getItems().clear();
+    }
+
+    // --- MENÚ: TRANSACCIONES ---
+
+    @FXML
+    public void mostrarTodasTransacciones() {
+        cambiarVista(false); // false = transacciones
+        lblTituloTransacciones.setText("Todas las Transacciones");
+        contenedorBusquedaTransacciones.setVisible(false); contenedorBusquedaTransacciones.setManaged(false);
+        cargarDatosTransacciones();
+    }
+
+    @FXML
+    public void mostrarBusquedaTransacciones() {
+        cambiarVista(false);
+        lblTituloTransacciones.setText("Buscar Transacción");
+        contenedorBusquedaTransacciones.setVisible(true); contenedorBusquedaTransacciones.setManaged(true);
+        txtBuscarTransaccion.clear();
+        tablaTransacciones.getItems().clear();
+    }
+
+    // --- ACCIONES DE BÚSQUEDA ---
+
+    @FXML
+    public void accionBuscarUsuarioCedula() {
+        String cedula = txtBuscarCedula.getText().trim();
+        if (cedula.isEmpty()) return;
+        Usuario u = RepositorioUsuarios.buscarPorCedula(cedula);
+        actualizarTablaUsuario(u);
+    }
+
+    @FXML
+    public void accionBuscarUsuarioAlias() {
+        String alias = txtBuscarAlias.getText().trim();
+        if (alias.isEmpty()) return;
+        Usuario u = RepositorioUsuarios.buscarPorAlias(alias);
+        actualizarTablaUsuario(u);
+    }
+
+    private void actualizarTablaUsuario(Usuario u) {
+        if (u != null) {
+            tablaUsuarios.setItems(FXCollections.observableArrayList(u));
+        } else {
+            mostrarAlerta("Sin resultados", "Usuario no encontrado.");
+            tablaUsuarios.getItems().clear();
+        }
+    }
+
+    @FXML
+    public void accionBuscarTransaccion() {
+        String id = txtBuscarTransaccion.getText().trim();
+        if (id.isEmpty()) return;
+
+        List<Transaccion> todas = RepositorioTransacciones.obtenerHistorialGlobal();
+        ObservableList<Transaccion> filtrada = FXCollections.observableArrayList();
+        for (Transaccion t : todas) {
+            if (t.getIdTransaccion().equalsIgnoreCase(id)) {
+                filtrada.add(t);
+                break;
+            }
+        }
+        if (!filtrada.isEmpty()) tablaTransacciones.setItems(filtrada);
+        else mostrarAlerta("Sin resultados", "ID no encontrado.");
+    }
+
+    // --- UTILIDADES ---
+
+    private void cambiarVista(boolean mostrarUsuarios) {
+        vistaUsuarios.setVisible(mostrarUsuarios);
+        vistaUsuarios.setManaged(mostrarUsuarios);
+
+        vistaTransacciones.setVisible(!mostrarUsuarios);
+        vistaTransacciones.setManaged(!mostrarUsuarios);
+    }
+
+    private void configurarAnimacionMenu() {
+        Duration duration = Duration.millis(250);
+        // Ajustamos los valores:
+        // TranslateX: -180 oculta la mayoría, 0 muestra todo.
+        TranslateTransition openNav = new TranslateTransition(duration, sidebarMenu);
+        openNav.setToX(0);
+        FadeTransition fadeIn = new FadeTransition(duration, menuContent);
+        fadeIn.setToValue(1.0);
+
+        ParallelTransition open = new ParallelTransition(openNav, fadeIn);
+
+        TranslateTransition closeNav = new TranslateTransition(duration, sidebarMenu);
+        closeNav.setToX(-180); // Deja 60px visibles (240 ancho total - 180)
+        FadeTransition fadeOut = new FadeTransition(duration, menuContent);
+        fadeOut.setToValue(0.0);
+
+        ParallelTransition close = new ParallelTransition(closeNav, fadeOut);
+
+        sidebarMenu.setOnMouseEntered(e -> { close.stop(); open.play(); });
+        sidebarMenu.setOnMouseExited(e -> { open.stop(); close.play(); });
+    }
+
+    // ... (El resto de métodos cargarDatosUsuarios, cargarDatosTransacciones, configurarTabla, guardar y cargar archivos son IGUALES que antes) ...
+
+    private void cargarDatosUsuarios() {
+        tablaUsuarios.setItems(FXCollections.observableArrayList(RepositorioUsuarios.obtenerTodos()));
+    }
+    private void cargarDatosTransacciones() {
+        tablaTransacciones.setItems(FXCollections.observableArrayList(RepositorioTransacciones.obtenerHistorialGlobal()));
+    }
     private void configurarTablaUsuarios() {
         colCedula.setCellValueFactory(new PropertyValueFactory<>("cedula"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colAlias.setCellValueFactory(new PropertyValueFactory<>("alias"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        colSaldo.setCellValueFactory(cell ->
-                new SimpleStringProperty(String.valueOf(cell.getValue().getBilletera().getSaldo())));
-
-        cargarUsuarios();
+        colSaldo.setCellValueFactory(cell -> new SimpleStringProperty(String.format("$ %.2f", cell.getValue().getBilletera().getSaldo())));
     }
-
     private void configurarTablaTransacciones() {
         colID.setCellValueFactory(new PropertyValueFactory<>("idTransaccion"));
         colMonto.setCellValueFactory(new PropertyValueFactory<>("monto"));
         colTipo.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getClass().getSimpleName()));
-
-        // Formato de fecha seguro
         colFecha.setCellValueFactory(cell -> {
-            if(cell.getValue().getFecha() != null)
-                return new SimpleStringProperty(cell.getValue().getFecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            if(cell.getValue().getFecha() != null) return new SimpleStringProperty(cell.getValue().getFecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
             return new SimpleStringProperty("-");
         });
-
-        // Obtener cédula del usuario dueño de la transacción
-        colUsuario.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getUsuario().getCedula()));
-
-        cargarTransacciones();
+        colUsuario.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getUsuario().getCedula()));
     }
-
-    @FXML
-    public void cargarUsuarios() {
-        tablaUsuarios.setItems(FXCollections.observableArrayList(RepositorioUsuarios.obtenerTodos()));
+    @FXML protected void onBotonGuardarArchivo() {
+        try { RepositorioUsuarios.guardarEnArchivo(); RepositorioTransacciones.guardarEnArchivo(); mostrarAlerta("Éxito", "Datos guardados."); } catch (Exception e) { mostrarAlerta("Error", e.getMessage()); }
     }
-
-    @FXML
-    public void cargarTransacciones() {
-        tablaTransacciones.setItems(FXCollections.observableArrayList(RepositorioTransacciones.obtenerHistorialGlobal()));
+    @FXML protected void onBotonCargarArchivo() {
+        try { RepositorioUsuarios.cargarDesdeArchivo("usuarios.dat"); RepositorioTransacciones.cargarDesdeArchivo("transacciones.dat"); if (vistaUsuarios.isVisible()) cargarDatosUsuarios(); else cargarDatosTransacciones(); mostrarAlerta("Éxito", "Datos cargados."); } catch (Exception e) { mostrarAlerta("Información", "Error al cargar archivos."); }
     }
-
-    @FXML
-    protected void onBotonGuardarArchivo() {
-        try {
-            RepositorioUsuarios.guardarEnArchivo();
-            RepositorioTransacciones.guardarEnArchivo();
-            mostrarAlerta("Éxito", "Datos guardados correctamente.");
-        } catch (Exception e) {
-            mostrarAlerta("Error", "No se pudo guardar: " + e.getMessage());
-        }
+    @FXML protected void onBotonSalirClick() {
+        try { FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/billeteravirtual/login-view.fxml")); Parent root = loader.load(); vistaUsuarios.getScene().setRoot(root); } catch (IOException e) { e.printStackTrace(); }
     }
-
-    @FXML
-    protected void onBotonCargarArchivo() {
-        try {
-            RepositorioUsuarios.cargarDesdeArchivo("usuarios.dat");
-            RepositorioTransacciones.cargarDesdeArchivo("transacciones.dat");
-            cargarUsuarios();
-            cargarTransacciones();
-            mostrarAlerta("Éxito", "Datos cargados y tablas actualizadas.");
-        } catch (Exception e) {
-            mostrarAlerta("Información", "Error al cargar (puede que los archivos no existan aún): " + e.getMessage());
-        }
-    }
-
-    @FXML
-    protected void onBotonSalirClick() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/billeteravirtual/login-view.fxml"));
-            Parent root = loader.load();
-            // Navegación simple al login
-            tablaUsuarios.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void mostrarAlerta(String titulo, String contenido) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(contenido);
-        alert.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION); alert.setTitle(titulo); alert.setHeaderText(null); alert.setContentText(contenido); alert.showAndWait();
     }
 }

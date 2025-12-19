@@ -2,75 +2,117 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #F1F5F9;"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.billeteravirtual.ui.PanelAdminController">
+<StackPane prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #F8FAFC;"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.billeteravirtual.ui.PanelAdminController">
 
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: white; -fx-padding: 16 32; -fx-border-color: transparent transparent #E2E8F0 transparent;">
+    <VBox spacing="20" style="-fx-padding: 30 30 30 70;">
 
-            <VBox spacing="2">
-                <Label text="Administración" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0F172A;"/>
-                <Label text="Control total del sistema" style="-fx-text-fill: #64748B; -fx-font-size: 13px;"/>
-            </VBox>
-
-            <Region HBox.hgrow="ALWAYS" />
-
-            <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button text="Guardar Datos" onAction="#onBotonGuardarArchivo" styleClass="button-primary"/>
-                <Button text="Cargar Datos" onAction="#onBotonCargarArchivo" styleClass="button-secondary"/>
-                <Separator orientation="VERTICAL" />
-                <Button text="Salir" onAction="#onBotonSalirClick" styleClass="button-danger"/>
+        <VBox fx:id="vistaUsuarios" spacing="15" visible="true" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <VBox>
+                    <Label fx:id="lblTituloUsuarios" text="Listado de Usuarios" styleClass="view-title"/>
+                    <Label text="Gestiona la información de los clientes" style="-fx-text-fill: #64748B;"/>
+                </VBox>
             </HBox>
-        </HBox>
-    </top>
 
-    <center>
-        <VBox spacing="20" style="-fx-padding: 30;">
+            <HBox fx:id="contenedorBusquedaCedula" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false"
+                  style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);">
+                <Label text="Cédula:" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="txtBuscarCedula" promptText="Ingrese cédula..." prefWidth="200"/>
+                <Button text="Buscar" onAction="#accionBuscarUsuarioCedula" styleClass="button-primary"/>
+                <Button text="Reset" onAction="#mostrarTodosUsuarios" styleClass="button-secondary"/>
+            </HBox>
 
-            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);" VBox.vgrow="ALWAYS" spacing="10">
-                <HBox alignment="CENTER_LEFT">
-                    <Label text="Usuarios" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Actualizar" onAction="#cargarUsuarios" styleClass="button-secondary" style="-fx-font-size: 12px;"/>
-                </HBox>
+            <HBox fx:id="contenedorBusquedaAlias" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false"
+                  style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1);">
+                <Label text="Alias:" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="txtBuscarAlias" promptText="Ingrese alias..." prefWidth="200"/>
+                <Button text="Buscar" onAction="#accionBuscarUsuarioAlias" styleClass="button-primary"/>
+                <Button text="Reset" onAction="#mostrarTodosUsuarios" styleClass="button-secondary"/>
+            </HBox>
 
-                <TableView fx:id="tablaUsuarios" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colCedula" text="Cédula" prefWidth="130"/>
-                        <TableColumn fx:id="colNombre" text="Nombre" prefWidth="180"/>
-                        <TableColumn fx:id="colAlias" text="Alias" prefWidth="130"/>
-                        <TableColumn fx:id="colEmail" text="Email" prefWidth="220"/>
-                        <TableColumn fx:id="colSaldo" text="Saldo" prefWidth="120"/>
-                    </columns>
-                    <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                    </columnResizePolicy>
-                </TableView>
-            </VBox>
-
-            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);" VBox.vgrow="ALWAYS" spacing="10">
-                <HBox alignment="CENTER_LEFT">
-                    <Label text="Transacciones" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Actualizar" onAction="#cargarTransacciones" styleClass="button-secondary" style="-fx-font-size: 12px;"/>
-                </HBox>
-
-                <TableView fx:id="tablaTransacciones" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colID" text="ID" prefWidth="120"/>
-                        <TableColumn fx:id="colFecha" text="Fecha" prefWidth="140"/>
-                        <TableColumn fx:id="colTipo" text="Tipo" prefWidth="140"/>
-                        <TableColumn fx:id="colMonto" text="Monto" prefWidth="120"/>
-                        <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="150"/>
-                    </columns>
-                    <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                    </columnResizePolicy>
-                </TableView>
-            </VBox>
-
+            <TableView fx:id="tablaUsuarios" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="colCedula" text="Cédula" prefWidth="130"/>
+                    <TableColumn fx:id="colNombre" text="Nombre" prefWidth="180"/>
+                    <TableColumn fx:id="colAlias" text="Alias" prefWidth="130"/>
+                    <TableColumn fx:id="colEmail" text="Email" prefWidth="220"/>
+                    <TableColumn fx:id="colSaldo" text="Saldo" prefWidth="120"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
         </VBox>
-    </center>
-</BorderPane>
+
+        <VBox fx:id="vistaTransacciones" spacing="15" visible="false" managed="false" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <VBox>
+                    <Label fx:id="lblTituloTransacciones" text="Historial Global" styleClass="view-title"/>
+                    <Label text="Registro de movimientos financieros" style="-fx-text-fill: #64748B;"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="contenedorBusquedaTransacciones" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false"
+                  style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 8;">
+                <Label text="ID:" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="txtBuscarTransaccion" promptText="Ej: TRX-1" prefWidth="200"/>
+                <Button text="Buscar" onAction="#accionBuscarTransaccion" styleClass="button-primary"/>
+                <Button text="Reset" onAction="#mostrarTodasTransacciones" styleClass="button-secondary"/>
+            </HBox>
+
+            <TableView fx:id="tablaTransacciones" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="colID" text="ID" prefWidth="120"/>
+                    <TableColumn fx:id="colFecha" text="Fecha" prefWidth="140"/>
+                    <TableColumn fx:id="colTipo" text="Tipo" prefWidth="140"/>
+                    <TableColumn fx:id="colMonto" text="Monto" prefWidth="120"/>
+                    <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="150"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+        </VBox>
+    </VBox>
+
+    <VBox fx:id="sidebarMenu" spacing="10" prefWidth="240" maxWidth="240" translateX="-180"
+          styleClass="sidebar" StackPane.alignment="CENTER_LEFT">
+        <padding>
+            <Insets top="30" right="15" bottom="30" left="20"/>
+        </padding>
+
+        <Label text="☰" style="-fx-font-size: 20px; -fx-cursor:hand; -fx-text-fill: #64748B;">
+            <VBox.margin><Insets bottom="10" /></VBox.margin>
+        </Label>
+
+        <VBox fx:id="menuContent" spacing="5" opacity="0">
+            <Label text="AdminPanel" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0F172A;">
+                <VBox.margin><Insets bottom="15"/></VBox.margin>
+            </Label>
+
+            <Label text="USUARIOS" styleClass="menu-category"/>
+            <Button text="Ver Todos" onAction="#mostrarTodosUsuarios" maxWidth="Infinity" styleClass="menu-button"/>
+            <Button text="Buscar por Cédula" onAction="#mostrarBusquedaCedula" maxWidth="Infinity" styleClass="menu-button"/>
+            <Button text="Buscar por Alias" onAction="#mostrarBusquedaAlias" maxWidth="Infinity" styleClass="menu-button"/>
+
+            <Region prefHeight="15"/>
+
+            <Label text="TRANSACCIONES" styleClass="menu-category"/>
+            <Button text="Ver Todas" onAction="#mostrarTodasTransacciones" maxWidth="Infinity" styleClass="menu-button"/>
+            <Button text="Buscar por ID" onAction="#mostrarBusquedaTransacciones" maxWidth="Infinity" styleClass="menu-button"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Label text="SISTEMA" styleClass="menu-category"/>
+            <Button text="Guardar" onAction="#onBotonGuardarArchivo" maxWidth="Infinity" styleClass="menu-button"/>
+            <Button text="Cargar" onAction="#onBotonCargarArchivo" maxWidth="Infinity" styleClass="menu-button"/>
+            <Separator/>
+            <Button text="Salir" onAction="#onBotonSalirClick" maxWidth="Infinity" styleClass="menu-button, button-danger"/>
+        </VBox>
+    </VBox>
+
+</StackPane>

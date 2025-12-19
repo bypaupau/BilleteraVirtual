@@ -26,8 +26,8 @@
     -fx-border-color: #E2E8F0;   /* Gris claro */
     -fx-border-radius: 12px;
     -fx-border-width: 1.5px;
-    -fx-padding: 14px 16px;      /* Más espacio interno, texto más grande */
-    -fx-font-size: 15px;
+    -fx-padding: 8px 12px;      /* Más espacio interno, texto más grande */
+    -fx-font-size: 13px;
     -fx-prompt-text-fill: #94A3B8; /* Color del placeholder */
     -fx-transition: all 0.2s ease-in-out;
 }
@@ -44,15 +44,14 @@
 /* --- BOTONES --- */
 /* Estilo base para todos los botones */
 .button {
-    -fx-background-radius: 14px;
+    -fx-background-radius: 8px; /* Menos redondeados para que se vean más serios */
     -fx-cursor: hand;
-    -fx-font-size: 16px;
-    -fx-font-weight: 700; /* Bold */
-    -fx-padding: 14px 28px;
-    -fx-border-width: 0; /* Sin bordes duros por defecto */
+    -fx-font-size: 13px;        /* Letra más pequeña (antes era 16px) */
+    -fx-font-weight: 700;
+    -fx-padding: 8px 16px;      /* MUCHO MENOS RELLENO (antes era 14px 28px) */
+    -fx-border-width: 0;
     -fx-transition: all 0.2s ease-in-out;
 }
-
 /* Botón Principal (Login, Registrar, Confirmar) - Celeste Vibrante */
 .button-primary {
     -fx-background-color: #0EA5E9; /* Sky 500 */
@@ -196,4 +195,55 @@
     -fx-font-size: 14px;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 15px;
+}
+
+/* --- BOTONES PEQUEÑOS (Para el Admin y Tablas) --- */
+.button-small {
+    -fx-font-size: 13px;       /* Letra más pequeña */
+    -fx-padding: 6px 14px;     /* Menos relleno */
+    -fx-background-radius: 8px;
+    -fx-min-height: 30px;      /* Altura controlada */
+}
+
+/* Ajuste para que los botones de peligro pequeños se vean bien */
+.button-small.button-danger {
+    -fx-font-size: 13px;
+    -fx-padding: 6px 14px;
+}
+
+/* --- MENÚ LATERAL (Sidebar) --- */
+.sidebar {
+    -fx-background-color: #FFFFFF; /* Blanco puro */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-border-color: transparent #E2E8F0 transparent transparent;
+    -fx-border-width: 1px;
+}
+
+.menu-category {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 5px 15px;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #334155;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 10px 15px;
+    -fx-background-radius: 8px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #0EA5E9; /* Azulito al pasar el mouse */
+}
+
+/* Títulos de las vistas */
+.view-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F172A;
 }
