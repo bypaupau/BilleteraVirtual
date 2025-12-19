@@ -6,9 +6,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <VBox alignment="CENTER" spacing="0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.example.billeteravirtual.ui.LoginController"
@@ -22,10 +21,13 @@
         <VBox.margin>
             <Insets bottom="30.0" />
         </VBox.margin>
-        <StackPane style="-fx-background-color: #0EA5E9; -fx-background-radius: 18; -fx-pref-width: 56; -fx-pref-height: 56;">
-            <Rectangle width="28" height="20" arcWidth="6" arcHeight="6" style="-fx-fill: white;"/>
-            <Circle radius="2" translateX="6" translateY="0" style="-fx-fill: #0EA5E9;"/>
-        </StackPane>
+
+        <ImageView fitHeight="56.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@/iconoBilletera.png" />
+            </image>
+        </ImageView>
+
         <VBox spacing="0" alignment="CENTER_LEFT">
             <Label text="Billetera Virtual" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0F172A;"/>
             <Label text="Bienvenido de nuevo" style="-fx-text-fill: #64748B; -fx-font-size: 14px;"/>

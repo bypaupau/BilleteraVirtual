@@ -3,12 +3,14 @@ package org.example.billeteravirtual;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.example.billeteravirtual.repositorios.Paths;
 import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
 import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class AplicacionBilletera extends Application {
 
@@ -19,6 +21,13 @@ public class AplicacionBilletera extends Application {
 
         String css = getClass().getResource("/styles.css").toExternalForm();
         scene.getStylesheets().add(css);
+
+        try {
+            Image icono = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/iconoBilletera.png")));
+            stage.getIcons().add(icono);
+        } catch (NullPointerException e) {
+            System.out.println("Advertencia: No se encontró el icono de la aplicación.");
+        }
 
         stage.setTitle("Billetera Virtual");
         stage.setScene(scene);
