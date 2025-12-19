@@ -69,8 +69,14 @@ public class Validador {
         if (alias == null || alias.trim().isEmpty()) {
             throw new AliasInvalidoException("El alias es obligatorio");
         }
-        if (!Pattern.matches(ALIAS_REGEX, alias)) {
-            throw new AliasInvalidoException("El alias no es válido (mínimo 5 caracteres).");
+
+        if (alias.length() < 5 || alias.length() > 15) {
+            throw new AliasInvalidoException("El alias debe tener entre 5 y 15 caracteres.");
+        }
+
+
+        if (!Pattern.matches("^[a-zA-Z0-9._]+$", alias)) {
+            throw new AliasInvalidoException("El alias contiene símbolos inválidos. Solo use letras, números, '.' o '_'.");
         }
     }
 
@@ -157,7 +163,10 @@ public class Validador {
      */
     public static void validarMonto(double monto) throws MontoInvalidoException {
         if (monto <= 0) {
-            throw new MontoInvalidoException("El monto no puede ser negativo ni cero.");
+            throw new MontoInvalidoException("El monto debe ser positivo.");
+        }
+        if (monto > 5000) { // Ejemplo de límite
+            throw new MontoInvalidoException("El monto máximo por transacción es de $5,000.");
         }
     }
 

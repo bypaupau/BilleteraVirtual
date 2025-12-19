@@ -13,6 +13,7 @@ import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controlador del panel principal del usuario.
@@ -198,28 +199,43 @@ public class PanelUsuarioController {
         dialog.setHeaderText("Ingrese monto:");
         dialog.setContentText(null);
 
-        dialog.showAndWait().ifPresent(montoStr -> {
-            try {
-                double monto = Double.parseDouble(montoStr.replace(",", "."));
-                if (monto <= 0) throw new NumberFormatException();
+        // Capturamos el resultado del diálogo
+        Optional<String> resultado = dialog.showAndWait();
 
-                // 1. Ejecutar la lógica de la transacción (Retiro/Depósito/Transferencia)
+        resultado.ifPresent(montoStr -> {
+            boolean exito = false;
+
+            try {
+                // 1. Validar número y reemplazar comas
+                double monto = Double.parseDouble(montoStr.replace(",", "."));
+
+                if (monto <= 0) {
+                    throw new NumberFormatException();
+                }
+
+                // 2. Ejecutar lógica (Aquí saltará SaldoInsuficienteException si no hay dinero)
                 accion.ejecutar(monto);
 
-                // 2. ¡NUEVO! GUARDAR CAMBIOS INMEDIATAMENTE
-                // Guardamos tanto usuarios (para actualizar saldo) como transacciones
+                // 3. Guardar cambios
                 RepositorioUsuarios.guardarEnArchivo();
                 RepositorioTransacciones.guardarEnArchivo();
 
-                // 3. Refrescar interfaz
+                // 4. Refrescar interfaz
                 actualizarDatos();
                 mostrarNotificacion("Éxito", "Operación realizada y guardada.");
+                exito = true;
 
             } catch (NumberFormatException e) {
                 mostrarNotificacion("Error", "Monto inválido. Ingrese un número positivo.");
             } catch (Exception e) {
-                e.printStackTrace(); // Imprimir error en consola para depurar
+                // Aquí cae SaldoInsuficienteException, IllegalArgumentException, etc.
                 mostrarNotificacion("Error", "No se pudo realizar: " + e.getMessage());
+            }
+
+            // === MAGIA DE REINTENTO ===
+            // Si no hubo éxito, volvemos a llamar al método para que salga la ventanita otra vez
+            if (!exito) {
+                pedirMontoYEjecutar(titulo, accion);
             }
         });
     }
