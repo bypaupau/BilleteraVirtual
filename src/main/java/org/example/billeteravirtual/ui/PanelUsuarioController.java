@@ -100,6 +100,12 @@ public class PanelUsuarioController {
             if(destino == null) destino = RepositorioUsuarios.buscarPorAlias(destinoStr);
 
             if (destino != null) {
+
+                if (destino.getCedula().equals(usuarioActivo.getCedula())) {
+                    mostrarNotificacion("Error", "No puedes transferirte dinero a ti mismo.");
+                    return; // Detiene el proceso aquí
+                }
+
                 // Variable final para usar dentro del lambda
                 Usuario finalDestino = destino;
 
