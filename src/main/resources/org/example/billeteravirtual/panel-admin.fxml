@@ -64,6 +64,14 @@
                 <Button text="Reset" onAction="#mostrarTodasTransacciones" styleClass="button-secondary"/>
             </HBox>
 
+            <HBox fx:id="contenedorBusquedaTransaccionesUsuario" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false"
+                  style="-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 8;">
+                <Label text="Cédula:" style="-fx-font-weight: bold;"/>
+                <TextField fx:id="txtBuscarTransaccionesUsuario" promptText="Ingrese cédula del usuario..." prefWidth="200"/>
+                <Button text="Buscar" onAction="#accionBuscarTransaccionesUsuario" styleClass="button-primary"/>
+                <Button text="Reset" onAction="#mostrarTodasTransacciones" styleClass="button-secondary"/>
+            </HBox>
+
             <TableView fx:id="tablaTransacciones" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-background-radius: 8;">
                 <columns>
                     <TableColumn fx:id="colID" text="ID" prefWidth="120"/>
@@ -100,11 +108,12 @@
             <Button text="Buscar por Alias" onAction="#mostrarBusquedaAlias" maxWidth="Infinity" styleClass="menu-button"/>
 
             <Region prefHeight="15"/>
-
             <Label text="TRANSACCIONES" styleClass="menu-category"/>
+
             <Button text="Ver Todas" onAction="#mostrarTodasTransacciones" maxWidth="Infinity" styleClass="menu-button"/>
             <Button text="Buscar por ID" onAction="#mostrarBusquedaTransacciones" maxWidth="Infinity" styleClass="menu-button"/>
 
+            <Button text="Buscar por Usuario" onAction="#mostrarBusquedaTransaccionesUsuario" maxWidth="Infinity" styleClass="menu-button"/>
             <Region VBox.vgrow="ALWAYS"/>
 
             <Label text="SISTEMA" styleClass="menu-category"/>

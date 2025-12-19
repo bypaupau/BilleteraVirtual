@@ -47,8 +47,10 @@ public class PanelAdminController {
 
     // Campos de texto
     @FXML private TextField txtBuscarCedula;
-    @FXML private TextField txtBuscarAlias; // <--- NUEVO
+    @FXML private TextField txtBuscarAlias;
     @FXML private TextField txtBuscarTransaccion;
+    @FXML private HBox contenedorBusquedaTransaccionesUsuario;
+    @FXML private TextField txtBuscarTransaccionesUsuario;
 
     // Tabla Usuarios
     @FXML private TableView<Usuario> tablaUsuarios;
@@ -124,9 +126,17 @@ public class PanelAdminController {
 
     @FXML
     public void mostrarTodasTransacciones() {
-        cambiarVista(false); // false = transacciones
+        cambiarVista(false);
         lblTituloTransacciones.setText("Todas las Transacciones");
-        contenedorBusquedaTransacciones.setVisible(false); contenedorBusquedaTransacciones.setManaged(false);
+
+        contenedorBusquedaTransacciones.setVisible(false);
+        contenedorBusquedaTransacciones.setManaged(false);
+
+        if(contenedorBusquedaTransaccionesUsuario != null) {
+            contenedorBusquedaTransaccionesUsuario.setVisible(false);
+            contenedorBusquedaTransaccionesUsuario.setManaged(false);
+        }
+
         cargarDatosTransacciones();
     }
 
@@ -267,5 +277,53 @@ public class PanelAdminController {
     }
     private void mostrarAlerta(String titulo, String contenido) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION); alert.setTitle(titulo); alert.setHeaderText(null); alert.setContentText(contenido); alert.showAndWait();
+    }
+
+    /**
+     * Muestra la barra de búsqueda para filtrar transacciones por Cédula de Usuario
+     */
+    @FXML
+    public void mostrarBusquedaTransaccionesUsuario() {
+        cambiarVista(false); // false = transacciones
+        lblTituloTransacciones.setText("Transacciones por Usuario");
+
+        // Ocultar la búsqueda por ID
+        contenedorBusquedaTransacciones.setVisible(false);
+        contenedorBusquedaTransacciones.setManaged(false);
+
+        // Mostrar la nueva búsqueda por Usuario
+        contenedorBusquedaTransaccionesUsuario.setVisible(true);
+        contenedorBusquedaTransaccionesUsuario.setManaged(true);
+
+        txtBuscarTransaccionesUsuario.clear();
+        tablaTransacciones.getItems().clear();
+    }
+
+    /**
+     * Ejecuta la búsqueda usando el repositorio
+     */
+    @FXML
+    public void accionBuscarTransaccionesUsuario() {
+        String textoBusqueda = txtBuscarTransaccionesUsuario.getText().trim();
+        if (textoBusqueda.isEmpty()) {
+            return;
+        }
+        String cedulaFinal = textoBusqueda;
+        Usuario usuarioPorAlias = RepositorioUsuarios.buscarPorAlias(textoBusqueda);
+
+        if (usuarioPorAlias != null) {
+            // ¡Bingo! El usuario escribió un alias ("pau123"), así que usaremos su cédula real
+            cedulaFinal = usuarioPorAlias.getCedula();
+            mostrarAlerta("Búsqueda Inteligente", "Se encontró el alias '" + textoBusqueda + "'. Buscando transacciones de la cédula: " + cedulaFinal);
+        }
+
+        List<Transaccion> historial = RepositorioTransacciones.obtenerHistorialPorUsuario(cedulaFinal);
+
+        if (!historial.isEmpty()) {
+            tablaTransacciones.setItems(FXCollections.observableArrayList(historial));
+        } else {
+            mostrarAlerta("Sin resultados", "No hay transacciones para esta cédula.");
+            tablaTransacciones.getItems().clear();
+        }
     }
 }
