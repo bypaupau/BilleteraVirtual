@@ -13,6 +13,11 @@ import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Controlador del panel principal del usuario.
+ * Gestiona la visualización del saldo, el saludo personalizado y el acceso
+ * a las operaciones financieras (Depósito, Retiro, Transferencia).
+ */
 public class PanelUsuarioController {
 
     private Usuario usuarioActivo;
@@ -20,6 +25,13 @@ public class PanelUsuarioController {
     @FXML private Label lblNombre;
     @FXML private Label lblSaldo;
 
+
+    /**
+     * Asigna el usuario que ha iniciado sesión a este controlador.
+     * Actualiza la interfaz gráfica con el nombre y saldo del usuario.
+     *
+     * @param usuario El objeto Usuario que ha sido autenticado.
+     */
     public void setUsuarioActivo(Usuario usuario) {
         this.usuarioActivo = usuario;
         actualizarDatos();
@@ -33,8 +45,12 @@ public class PanelUsuarioController {
         }
     }
 
-    // --- MÉTODOS CORREGIDOS (Nombres coinciden con el FXML) ---
-
+    /**
+     * Despliega un diálogo para realizar un depósito.
+     * Solicita el monto, valida que sea positivo y registra la transacción.
+     *
+     * @param event Evento del mouse que disparó la acción.
+     */
     @FXML
     void abrirVentanaDeposito(MouseEvent event) {
         pedirMontoYEjecutar("Depositar", (monto) -> {
@@ -46,6 +62,12 @@ public class PanelUsuarioController {
         });
     }
 
+    /**
+     * Despliega un diálogo para realizar un retiro.
+     * Valida que el usuario tenga saldo suficiente antes de confirmar la operación.
+     *
+     * @param event Evento del mouse que disparó la acción.
+     */
     @FXML
     void abrirVentanaRetiro(MouseEvent event) {
         pedirMontoYEjecutar("Retirar", (monto) -> {
@@ -55,6 +77,17 @@ public class PanelUsuarioController {
         });
     }
 
+
+    /**
+     * Inicia el flujo de una transferencia de fondos.
+     * <ol>
+     * <li>Solicita la cédula o alias del destinatario.</li>
+     * <li>Verifica que el destinatario exista.</li>
+     * <li>Solicita el monto a transferir y valida fondos suficientes.</li>
+     * </ol>
+     *
+     * @param event Evento del mouse que disparó la acción.
+     */
     @FXML
     void abrirVentanaTransferencia(MouseEvent event) {
         TextInputDialog dialogCedula = new TextInputDialog();
@@ -89,8 +122,10 @@ public class PanelUsuarioController {
         onBotonHistorial(); // Reutilizamos la lógica que ya tenías
     }
 
-    // Este método se mantiene igual por si lo usas desde el botón inferior "Ver Historial"
-    @FXML
+    /**
+     * Muestra el historial de transacciones del usuario activo.
+     * Filtra la lista global de transacciones para mostrar solo las relacionadas con este usuario.
+     */    @FXML
     protected void onBotonHistorial() {
         try {
             List<Transaccion> lista = RepositorioTransacciones.obtenerHistorialPorUsuario(usuarioActivo.getCedula());

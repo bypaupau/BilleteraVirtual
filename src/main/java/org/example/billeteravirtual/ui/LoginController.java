@@ -14,12 +14,22 @@ import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
 import java.io.IOException;
 
+/**
+ * Controlador encargado de gestionar la vista de inicio de sesión.
+ * Maneja la autenticación de usuarios mediante cédula o alias y la navegación
+ * hacia el registro o el panel de administración.
+ */
 public class LoginController {
 
 
     @FXML
     private TextField txtIdentificador;
 
+    /**
+     * Maneja el evento de clic en el botón "Ingresar".
+     * Valida si el texto ingresado corresponde a una cédula o un alias existente.
+     * Si es correcto, redirige al panel de usuario; de lo contrario, muestra una alerta de error.
+     */
     @FXML
     protected void onBotonIngresarClick() {
         String dato = txtIdentificador.getText();
@@ -36,12 +46,18 @@ public class LoginController {
     }
 
 
-
+    /**
+     * Redirige la aplicación a la vista de administración.
+     * Se ejecuta al hacer clic en el botón correspondiente.
+     */
     @FXML
     protected void onBotonAdminClick() {
         cambiarPantallaAdmin();
     }
 
+    /**
+     * Redirige la aplicación a la vista de registro de nuevos usuarios.
+     */
     @FXML
     protected void onBotonRegistrarClick() {
         // Navegación simple al registro
@@ -56,7 +72,6 @@ public class LoginController {
             PanelUsuarioController controller = loader.getController();
             controller.setUsuarioActivo(usuarioLogueado);
 
-            // Cambiar la raíz de la escena actual
             txtIdentificador.getScene().setRoot(root);
 
         } catch (IOException e) {
@@ -70,7 +85,6 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/billeteravirtual/panel-admin.fxml"));
             Parent root = loader.load();
 
-            // Cambiar la raíz de la escena actual
             txtIdentificador.getScene().setRoot(root);
 
         } catch (IOException e) {
@@ -79,7 +93,6 @@ public class LoginController {
         }
     }
 
-    // Método auxiliar para no repetir código de carga
     private void cambiarEscena(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -102,8 +115,11 @@ public class LoginController {
     @FXML private TextField txtUsuario;
     @FXML private PasswordField txtContrasena;
 
-    // --- NUEVO MÉTODO: SE EJECUTA AUTOMÁTICAMENTE AL ABRIR LA VENTANA ---
-    @FXML
+    /**
+     * Inicializa el controlador.
+     * Se ejecuta automáticamente al cargar la vista. Intenta cargar los datos persistidos
+     * de usuarios y transacciones desde los archivos locales.
+     */    @FXML
     public void initialize() {
         try {
             // Intentamos cargar los usuarios y transacciones guardados

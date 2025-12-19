@@ -11,6 +11,11 @@ import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
 import java.io.IOException;
 
+/**
+ * Controlador para la vista de registro de nuevos usuarios.
+ * Recolecta los datos del formulario, invoca las validaciones de negocio
+ * y almacena el nuevo usuario en el repositorio si todo es correcto.
+ */
 public class RegistroController {
 
     @FXML private TextField txtNombre;
@@ -20,6 +25,18 @@ public class RegistroController {
     // Si tienes txtCiudad en tu FXML, descomenta esto:
     @FXML private TextField txtCiudad;
 
+    /**
+     * Procesa la solicitud de creación de cuenta.
+     * <p>
+     * Realiza las siguientes validaciones campo por campo:
+     * <ul>
+     * <li>Formato de nombre y ciudad.</li>
+     * <li>Validez de la cédula y correo electrónico.</li>
+     * <li>Disponibilidad del alias (que no exista previamente).</li>
+     * </ul>
+     * Si hay errores, acumula los mensajes y muestra una advertencia.
+     * Si todo es válido, guarda el usuario y regresa al Login.
+     */
     @FXML
     protected void onBotonGuardarClick() {
         StringBuilder errores = new StringBuilder(); // Aquí guardaremos los mensajes
@@ -88,6 +105,10 @@ public class RegistroController {
             mostrarAlerta("Error de Registro", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
+
+    /**
+     * Cancela el proceso de registro y retorna a la vista de inicio de sesión.
+     */
     @FXML
     protected void onBotonVolverClick() {
         try {

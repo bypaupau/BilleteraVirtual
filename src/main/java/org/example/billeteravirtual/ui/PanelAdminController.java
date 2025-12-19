@@ -23,6 +23,11 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Controlador del panel de administración.
+ * Permite visualizar todos los usuarios registrados y el historial global de transacciones.
+ * También gestiona la persistencia manual (guardar/cargar) de los datos.
+ */
 public class PanelAdminController {
 
     @FXML private VBox sidebarMenu;
@@ -61,6 +66,9 @@ public class PanelAdminController {
     @FXML private TableColumn<Transaccion, String> colFecha;
     @FXML private TableColumn<Transaccion, String> colUsuario;
 
+    /**
+     * Configura las tablas y las animaciones del menú lateral al iniciar la vista.
+     */
     @FXML
     public void initialize() {
         configurarTablaUsuarios();
@@ -69,8 +77,10 @@ public class PanelAdminController {
         mostrarTodosUsuarios();
     }
 
-    // --- MENÚ: USUARIOS ---
-
+    /**
+     * Cambia la vista activa para mostrar la tabla de usuarios.
+     * Reinicia los filtros de búsqueda.
+     */
     @FXML
     public void mostrarTodosUsuarios() {
         cambiarVista(true); // true = usuarios
@@ -83,6 +93,10 @@ public class PanelAdminController {
         cargarDatosUsuarios();
     }
 
+    /**
+     * Filtra la tabla de usuarios buscando por número de cédula exacto.
+     * Actualiza la tabla con el resultado o muestra alerta si no se encuentra.
+     */
     @FXML
     public void mostrarBusquedaCedula() {
         cambiarVista(true);
@@ -107,7 +121,6 @@ public class PanelAdminController {
         tablaUsuarios.getItems().clear();
     }
 
-    // --- MENÚ: TRANSACCIONES ---
 
     @FXML
     public void mostrarTodasTransacciones() {
@@ -117,6 +130,10 @@ public class PanelAdminController {
         cargarDatosTransacciones();
     }
 
+    /**
+     * Busca una transacción específica por su ID único (ej: TRX-1).
+     * Muestra el resultado en la tabla de transacciones.
+     */
     @FXML
     public void mostrarBusquedaTransacciones() {
         cambiarVista(false);
@@ -170,7 +187,6 @@ public class PanelAdminController {
         else mostrarAlerta("Sin resultados", "ID no encontrado.");
     }
 
-    // --- UTILIDADES ---
 
     private void cambiarVista(boolean mostrarUsuarios) {
         vistaUsuarios.setVisible(mostrarUsuarios);
@@ -227,9 +243,19 @@ public class PanelAdminController {
         });
         colUsuario.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getUsuario().getCedula()));
     }
+
+    /**
+     * Guarda manualmente el estado actual de usuarios y transacciones en archivos binarios (.dat).
+     * Utiliza los repositorios para invocar la persistencia.
+     */
     @FXML protected void onBotonGuardarArchivo() {
         try { RepositorioUsuarios.guardarEnArchivo(); RepositorioTransacciones.guardarEnArchivo(); mostrarAlerta("Éxito", "Datos guardados."); } catch (Exception e) { mostrarAlerta("Error", e.getMessage()); }
     }
+
+    /**
+     * Carga los datos desde los archivos binarios, sobrescribiendo o fusionando
+     * con los datos en memoria, y refresca las tablas visuales.
+     */
     @FXML protected void onBotonCargarArchivo() {
         try { RepositorioUsuarios.cargarDesdeArchivo("usuarios.dat"); RepositorioTransacciones.cargarDesdeArchivo("transacciones.dat"); if (vistaUsuarios.isVisible()) cargarDatosUsuarios(); else cargarDatosTransacciones(); mostrarAlerta("Éxito", "Datos cargados."); } catch (Exception e) { mostrarAlerta("Información", "Error al cargar archivos."); }
     }
