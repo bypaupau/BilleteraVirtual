@@ -18,9 +18,9 @@ public abstract class Transaccion implements Serializable {
     protected double monto;
     protected String idTransaccion;
     private LocalDateTime fechaHora;
-    private DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
-    private String fechaFormateada;
+    private static final DateTimeFormatter FORMATO = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
     protected Usuario usuario;
+    private String fechaFormateada;
     private static int contadorID; // es estatico porque no sera unico de cada instancia
 
     /**
@@ -33,7 +33,7 @@ public abstract class Transaccion implements Serializable {
         this.monto = monto;
         this.usuario = usuario;
         this.fechaHora = LocalDateTime.now();
-        this.fechaFormateada = this.fechaHora.format(formato);
+        this.fechaFormateada = this.fechaHora.format(FORMATO);
         contadorID++;
         this.idTransaccion = "TRX-" + contadorID;
     }

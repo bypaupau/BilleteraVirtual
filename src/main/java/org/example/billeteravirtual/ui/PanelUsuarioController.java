@@ -42,7 +42,6 @@ public class PanelUsuarioController {
             // IMPORTANTE: Aquí validamos reglas de negocio si fuera necesario
             t.validarTransaccion();
             // Guardamos
-            usuarioActivo.getBilletera().aumentarSaldo(monto); // Actualizamos saldo en memoria
             RepositorioTransacciones.guardarTransaccion(t);
         });
     }
@@ -52,7 +51,6 @@ public class PanelUsuarioController {
         pedirMontoYEjecutar("Retirar", (monto) -> {
             Retiro t = new Retiro(usuarioActivo, monto);
             t.validarTransaccion(); // Validará si hay saldo suficiente
-            usuarioActivo.getBilletera().restarSaldo(monto);
             RepositorioTransacciones.guardarTransaccion(t);
         });
     }
@@ -77,9 +75,6 @@ public class PanelUsuarioController {
                     Transferencia t = new Transferencia(monto, usuarioActivo, finalDestino);
                     t.validarTransaccion(); // Valida saldo
 
-                    // Ejecutamos la lógica de saldo
-                    usuarioActivo.getBilletera().restarSaldo(monto);
-                    finalDestino.getBilletera().aumentarSaldo(monto);
 
                     RepositorioTransacciones.guardarTransaccion(t);
                 });

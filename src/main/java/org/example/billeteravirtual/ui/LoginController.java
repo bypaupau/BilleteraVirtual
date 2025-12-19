@@ -5,14 +5,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.example.billeteravirtual.agentes.Usuario;
+import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
 import org.example.billeteravirtual.repositorios.RepositorioUsuarios;
 
 import java.io.IOException;
 
 public class LoginController {
+
 
     @FXML
     private TextField txtIdentificador;
@@ -31,6 +34,8 @@ public class LoginController {
             mostrarAlerta("Error", "Usuario no encontrado", Alert.AlertType.ERROR);
         }
     }
+
+
 
     @FXML
     protected void onBotonAdminClick() {
@@ -93,4 +98,20 @@ public class LoginController {
         alert.setContentText(contenido);
         alert.showAndWait();
     }
-}
+
+    @FXML private TextField txtUsuario;
+    @FXML private PasswordField txtContrasena;
+
+    // --- NUEVO MÉTODO: SE EJECUTA AUTOMÁTICAMENTE AL ABRIR LA VENTANA ---
+    @FXML
+    public void initialize() {
+        try {
+            // Intentamos cargar los usuarios y transacciones guardados
+            RepositorioUsuarios.cargarDesdeArchivo("usuarios.dat");
+            RepositorioTransacciones.cargarDesdeArchivo("transacciones.dat");
+            System.out.println("Datos cargados correctamente al iniciar.");
+        } catch (Exception e) {
+            // Si es la primera vez o no hay archivos, no pasa nada
+            System.out.println("No se encontraron datos previos o error al cargar: " + e.getMessage());
+        }
+}}
