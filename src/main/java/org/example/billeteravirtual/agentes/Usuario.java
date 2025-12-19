@@ -16,8 +16,18 @@ public class Usuario implements Serializable{
     private String email;
     private Billetera billetera;
 
-    //Constructores
-
+    /**
+     * Crea un nuevo usuario validando todos sus campos obligatorios.
+     * Al crearse, se le asigna automáticamente una Billetera vacía.
+     *
+     * @param cedula Identificación única del usuario (10 dígitos).
+     * @param nombre Nombre completo (solo letras y espacios).
+     * @param ciudad Ciudad de residencia.
+     * @param alias Nombre de usuario único para el sistema.
+     * @param email Correo electrónico válido.
+     * @throws IllegalArgumentException Si algún formato (nombre, ciudad) es inválido.
+     * @throws RuntimeException Si las validaciones de negocio fallan (ej: email inválido).
+     */
     public Usuario(String cedula, LocalDate fechaNacimiento, String nombre, String ciudad, String alias, String email) {
         //Zona de validaciones
         Validador.validarCedula(cedula);

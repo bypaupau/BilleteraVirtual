@@ -7,11 +7,14 @@ import java.io.Serializable;
 import  java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Clase abstracta que representa una operación financiera base dentro del sistema.
+ * Todas las operaciones específicas (Retiro, Depósito, etc.) deben heredar de esta clase.
+ */
 public abstract class Transaccion implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    //atributos
-    //private static final double  MAX_MONTO_TRANSACCION = 10000.00;  Se puede considerar implementar un monto maximo por transacción en el futuro
+
     protected double monto;
     protected String idTransaccion;
     private LocalDateTime fechaHora;
@@ -20,7 +23,12 @@ public abstract class Transaccion implements Serializable {
     protected Usuario usuario;
     private static int contadorID; // es estatico porque no sera unico de cada instancia
 
-    //Constructores
+    /**
+     * Constructor base para todas las transacciones.
+     * Genera automáticamente la fecha/hora actual y un ID único de transacción.
+     * * @param monto El valor monetario de la transacción.
+     * @param usuario El usuario que origina o solicita la transacción.
+     */
     public Transaccion(double monto, Usuario usuario) {
         this.monto = monto;
         this.usuario = usuario;
@@ -34,6 +42,10 @@ public abstract class Transaccion implements Serializable {
         return monto;
     }
 
+    /**
+     * Imprime en consola los detalles de la transacción.
+     * Puede ser sobrescrito para agregar detalles específicos del tipo de transacción.
+     */
     public void getInfoTransaccion(){
         System.out.println("Tipo: " + this.getClass().getSimpleName());
         System.out.println("ID Transacción: " + this.idTransaccion);
@@ -44,10 +56,13 @@ public abstract class Transaccion implements Serializable {
         }
     }
 
+    /**
+     * Método abstracto para validar las reglas de negocio específicas de cada transacción.
+     * Debe ser implementado por las subclases (ej: verificar saldo en Retiro).
+     * * @throws RuntimeException (o subclases específicas) si la validación falla.
+     */
     public void validarTransaccion(){ //va a ser aplicado polimorfismo en cada transaccion
     }
-
-    //public abstract boolean esIngreso(); // va a ser aplicada polimorfismo
 
     public String getIdTransaccion() {
         return idTransaccion;

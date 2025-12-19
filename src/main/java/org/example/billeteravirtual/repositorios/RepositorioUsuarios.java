@@ -48,9 +48,8 @@ public class RepositorioUsuarios {
     // --- MÉTODOS DE ARCHIVOS (AHORA SON ESTÁTICOS) ---
 
     public static void guardarEnArchivo() throws IOException {
-        // Usamos una ruta fija o una variable constante.
-        // Asegúrate de que Paths.ARCHIVO_USUARIOS exista o pon el string directo "usuarios.dat"
-        servicioPersistencia.guardar("usuarios.dat", mapaUsuarios);
+        // Cambio: Usar la constante Paths.ARCHIVO_USUARIOS
+        servicioPersistencia.guardar(Paths.ARCHIVO_USUARIOS, mapaUsuarios);
     }
 
     public static void cargarDesdeArchivo(String ruta) {

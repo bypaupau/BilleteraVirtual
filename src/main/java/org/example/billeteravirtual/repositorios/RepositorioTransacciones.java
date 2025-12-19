@@ -43,7 +43,8 @@ public class RepositorioTransacciones {
     // --- MÉTODOS ARCHIVOS (ESTÁTICOS) ---
 
     public static void guardarEnArchivo() throws IOException {
-        servicioPersistencia.guardar("transacciones.dat", mapaTransacciones);
+        // Cambio: Usar la constante Paths.ARCHIVO_TRANSACCIONES
+        servicioPersistencia.guardar(Paths.ARCHIVO_TRANSACCIONES, mapaTransacciones);
     }
 
     public static void cargarDesdeArchivo(String ruta) {

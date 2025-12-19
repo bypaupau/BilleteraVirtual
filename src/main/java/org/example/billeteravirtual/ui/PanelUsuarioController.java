@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent; // <--- IMPORTANTE: Necesario para los clics en los VBox
 import org.example.billeteravirtual.agentes.Usuario;
 import org.example.billeteravirtual.transacciones.*;
 import org.example.billeteravirtual.repositorios.RepositorioTransacciones;
@@ -32,35 +33,54 @@ public class PanelUsuarioController {
         }
     }
 
+    // --- MÉTODOS CORREGIDOS (Nombres coinciden con el FXML) ---
+
     @FXML
-    protected void onBotonDepositar() {
+    void abrirVentanaDeposito(MouseEvent event) {
         pedirMontoYEjecutar("Depositar", (monto) -> {
             Deposito t = new Deposito(monto, usuarioActivo);
+            // IMPORTANTE: Aquí validamos reglas de negocio si fuera necesario
+            t.validarTransaccion();
+            // Guardamos
+            usuarioActivo.getBilletera().aumentarSaldo(monto); // Actualizamos saldo en memoria
             RepositorioTransacciones.guardarTransaccion(t);
         });
     }
 
     @FXML
-    protected void onBotonRetirar() {
+    void abrirVentanaRetiro(MouseEvent event) {
         pedirMontoYEjecutar("Retirar", (monto) -> {
             Retiro t = new Retiro(usuarioActivo, monto);
+            t.validarTransaccion(); // Validará si hay saldo suficiente
+            usuarioActivo.getBilletera().restarSaldo(monto);
             RepositorioTransacciones.guardarTransaccion(t);
         });
     }
 
     @FXML
-    protected void onBotonTransferir() {
+    void abrirVentanaTransferencia(MouseEvent event) {
         TextInputDialog dialogCedula = new TextInputDialog();
         dialogCedula.setTitle("Transferir");
         dialogCedula.setHeaderText("Cédula o Alias destino:");
+        dialogCedula.setContentText(null); // Estética
+
         dialogCedula.showAndWait().ifPresent(destinoStr -> {
+            // Buscamos usuario destino (por cédula o alias)
             Usuario destino = RepositorioUsuarios.buscarPorCedula(destinoStr);
             if(destino == null) destino = RepositorioUsuarios.buscarPorAlias(destinoStr);
 
             if (destino != null) {
+                // Variable final para usar dentro del lambda
                 Usuario finalDestino = destino;
+
                 pedirMontoYEjecutar("Transferir a " + destino.getNombre(), (monto) -> {
                     Transferencia t = new Transferencia(monto, usuarioActivo, finalDestino);
+                    t.validarTransaccion(); // Valida saldo
+
+                    // Ejecutamos la lógica de saldo
+                    usuarioActivo.getBilletera().restarSaldo(monto);
+                    finalDestino.getBilletera().aumentarSaldo(monto);
+
                     RepositorioTransacciones.guardarTransaccion(t);
                 });
             } else {
@@ -70,17 +90,45 @@ public class PanelUsuarioController {
     }
 
     @FXML
-    protected void onBotonPagoServicios() {
-        ChoiceDialog<String> dialog = new ChoiceDialog<>("Luz", "Agua", "Internet");
-        dialog.setTitle("Pagar Servicio");
-        dialog.setHeaderText("Elige el servicio:");
-        dialog.showAndWait().ifPresent(servicio -> {
-            pedirMontoYEjecutar("Pagar " + servicio, (monto) -> {
-                PagoServicio t = new PagoServicio(monto, usuarioActivo, servicio, "REF-" + System.currentTimeMillis());
-                RepositorioTransacciones.guardarTransaccion(t);
-            });
-        });
+    void abrirVentanaHistorial(MouseEvent event) {
+        onBotonHistorial(); // Reutilizamos la lógica que ya tenías
     }
+
+    // Este método se mantiene igual por si lo usas desde el botón inferior "Ver Historial"
+    @FXML
+    protected void onBotonHistorial() {
+        try {
+            List<Transaccion> lista = RepositorioTransacciones.obtenerHistorialPorUsuario(usuarioActivo.getCedula());
+            StringBuilder texto = new StringBuilder();
+            if (lista.isEmpty()) texto.append("No hay movimientos recientes.");
+            else {
+                // Mostramos las transacciones más recientes primero (invirtiendo la lista visualmente o recorriendo normal)
+                for (Transaccion t : lista) {
+                    texto.append(t.getFecha().toString()) // O tu formato de fecha
+                            .append(" - ")
+                            .append(t.getClass().getSimpleName())
+                            .append(": $")
+                            .append(String.format("%.2f", t.getMonto()))
+                            .append("\n");
+                }
+            }
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Historial de Movimientos");
+            alert.setHeaderText(null);
+            TextArea area = new TextArea(texto.toString());
+            area.setEditable(false);
+            area.setWrapText(true);
+            area.setMaxWidth(Double.MAX_VALUE);
+            area.setMaxHeight(Double.MAX_VALUE);
+
+            alert.getDialogPane().setContent(area);
+            alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // --- UTILIDADES ---
 
     // Interfaz funcional simple para manejar las transacciones
     private interface TransaccionAction {
@@ -91,47 +139,33 @@ public class PanelUsuarioController {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(titulo);
         dialog.setHeaderText("Ingrese monto:");
+        dialog.setContentText(null);
+
         dialog.showAndWait().ifPresent(montoStr -> {
             try {
                 double monto = Double.parseDouble(montoStr);
+                if (monto <= 0) throw new NumberFormatException(); // Validar positivos
+
                 accion.ejecutar(monto);
-                actualizarDatos();
-                mostrarNotificacion("Éxito", "Operación realizada.");
+
+                actualizarDatos(); // Refrescar la UI (saldo nuevo)
+                mostrarNotificacion("Éxito", "Operación realizada correctamente.");
+
             } catch (NumberFormatException e) {
-                mostrarNotificacion("Error", "Monto inválido.");
+                mostrarNotificacion("Error", "Monto inválido. Ingrese un número positivo.");
             } catch (Exception e) {
-                mostrarNotificacion("Error", e.getMessage());
+                mostrarNotificacion("Error", "No se pudo realizar: " + e.getMessage());
             }
         });
     }
 
     @FXML
-    protected void onBotonHistorial() {
-        try {
-            List<Transaccion> lista = RepositorioTransacciones.obtenerHistorialPorUsuario(usuarioActivo.getCedula());
-            StringBuilder texto = new StringBuilder();
-            if (lista.isEmpty()) texto.append("No hay movimientos.");
-            else {
-                for (Transaccion t : lista) {
-                    texto.append(t.getClass().getSimpleName()).append(": $").append(t.getMonto()).append("\n");
-                }
-            }
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Historial");
-            alert.setHeaderText(null);
-            TextArea area = new TextArea(texto.toString());
-            area.setEditable(false);
-            alert.getDialogPane().setContent(area);
-            alert.showAndWait();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     protected void onBotonInfo() {
         mostrarNotificacion("Mis Datos",
-                "Nombre: " + usuarioActivo.getNombre() + "\nCédula: " + usuarioActivo.getCedula());
+                "Nombre: " + usuarioActivo.getNombre() + "\n" +
+                        "Cédula: " + usuarioActivo.getCedula() + "\n" +
+                        "Alias: " + usuarioActivo.getAlias() + "\n" +
+                        "Email: " + usuarioActivo.getEmail());
     }
 
     @FXML
@@ -139,7 +173,6 @@ public class PanelUsuarioController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/billeteravirtual/login-view.fxml"));
             Parent root = loader.load();
-            // Navegación simple: Volver al login
             lblNombre.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();

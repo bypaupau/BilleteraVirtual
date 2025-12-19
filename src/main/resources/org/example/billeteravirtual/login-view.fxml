@@ -5,24 +5,52 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.billeteravirtual.ui.LoginController">
+<VBox alignment="CENTER" spacing="0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.billeteravirtual.ui.LoginController"
+      style="-fx-background-color: #F8FAFC;">
+
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
     </padding>
 
-    <Label text="Billetera Virtual">
-        <font>
-            <Font name="System Bold" size="24.0" />
-        </font>
-    </Label>
+    <HBox alignment="CENTER" spacing="16">
+        <VBox.margin>
+            <Insets bottom="30.0" />
+        </VBox.margin>
+        <StackPane style="-fx-background-color: #0EA5E9; -fx-background-radius: 18; -fx-pref-width: 56; -fx-pref-height: 56;">
+            <Rectangle width="28" height="20" arcWidth="6" arcHeight="6" style="-fx-fill: white;"/>
+            <Circle radius="2" translateX="6" translateY="0" style="-fx-fill: #0EA5E9;"/>
+        </StackPane>
+        <VBox spacing="0" alignment="CENTER_LEFT">
+            <Label text="Billetera Virtual" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0F172A;"/>
+            <Label text="Bienvenido de nuevo" style="-fx-text-fill: #64748B; -fx-font-size: 14px;"/>
+        </VBox>
+    </HBox>
 
-    <Label text="Ingrese su Cédula o Alias:" />
-    <TextField fx:id="txtIdentificador" maxWidth="200.0" promptText="Ej: 12345 o 'juan'" />
-    <Button text="Ingresar" onAction="#onBotonIngresarClick" defaultButton="true" style="-fx-background-color: #0078d7; -fx-text-fill: white;"/>
+    <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 10, 0, 0, 2);" maxWidth="420" prefWidth="420">
+        <padding>
+            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+        </padding>
 
-    <Button text="Crear Cuenta Nueva" onAction="#onBotonRegistrarClick" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+        <VBox spacing="8" alignment="CENTER_LEFT" style="-fx-pref-width: 100%;">
+            <Label text="Cédula o Alias" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;" />
+            <TextField fx:id="txtIdentificador" promptText="Ingresa tu usuario" prefHeight="48"/>
+        </VBox>
 
-    <Button text="Soy Administrador" onAction="#onBotonAdminClick" style="-fx-background-color: transparent; -fx-text-fill: #555; -fx-underline: true;"/>
+        <Button text="Ingresar" onAction="#onBotonIngresarClick" defaultButton="true"
+                styleClass="button-primary" maxWidth="Infinity" prefHeight="48"/>
+
+        <Label text="o" style="-fx-text-fill: #94A3B8;"/>
+
+        <Button text="Crear Cuenta Nueva" onAction="#onBotonRegistrarClick"
+                styleClass="button-secondary" maxWidth="Infinity" prefHeight="44"/>
+
+        <Button text="Panel Administrador" onAction="#onBotonAdminClick"
+                styleClass="button-secondary" maxWidth="Infinity" prefHeight="44"/>
+    </VBox>
 </VBox>

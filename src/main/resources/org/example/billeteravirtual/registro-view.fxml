@@ -1,22 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.billeteravirtual.ui.RegistroController">
-    <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.billeteravirtual.ui.RegistroController"
+            style="-fx-background: #F8FAFC; -fx-background-color: #F8FAFC;"
+            fitToWidth="true">
 
-    <Label text="Registro de Usuario">
-        <font><Font name="System Bold" size="20.0" /></font>
-    </Label>
+    <VBox alignment="CENTER" spacing="0" style="-fx-background-color: #F8FAFC;">
+        <padding>
+            <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+        </padding>
 
-    <TextField fx:id="txtNombre" promptText="Nombre Completo" />
-    <TextField fx:id="txtCedula" promptText="Cédula" />
-    <TextField fx:id="txtEmail" promptText="Correo Electrónico" />
-    <TextField fx:id="txtAlias" promptText="Alias (Opcional)" />
-    <TextField fx:id="txtCiudad" promptText="Ciudad de Residencia" />
+        <!-- HEADER CON ICONO Y TÍTULO -->
+        <HBox alignment="CENTER" spacing="12">
+            <VBox.margin>
+                <Insets bottom="20.0" />
+            </VBox.margin>
 
-    <Button text="Registrarme" onAction="#onBotonGuardarClick" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" prefWidth="200"/>
-    <Button text="Cancelar / Volver" onAction="#onBotonVolverClick" style="-fx-background-color: #f44336; -fx-text-fill: white;" prefWidth="200"/>
-</VBox>
+            <!-- ICONO PEQUEÑO -->
+            <StackPane style="-fx-background-color: linear-gradient(to bottom right, #10B981, #059669); -fx-background-radius: 16; -fx-pref-width: 50; -fx-pref-height: 50;">
+                <StackPane>
+                    <Circle radius="14" style="-fx-fill: white; -fx-opacity: 0.9;"/>
+                    <Label text="+" style="-fx-font-size: 24px; -fx-text-fill: #10B981; -fx-font-weight: bold;"/>
+                </StackPane>
+            </StackPane>
+
+            <!-- TÍTULO -->
+            <VBox spacing="2" alignment="CENTER_LEFT">
+                <Label text="Crear Cuenta Nueva" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0F172A;"/>
+                <Label text="Únete a nuestra comunidad financiera" style="-fx-text-fill: #64748B; -fx-font-size: 12px;"/>
+            </VBox>
+        </HBox>
+
+        <!-- FORMULARIO -->
+        <VBox spacing="14.0" styleClass="content-card" maxWidth="480" prefWidth="480">
+            <padding>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+            </padding>
+
+            <Label text="Información Personal" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0F172A;"/>
+
+            <!-- NOMBRE -->
+            <VBox spacing="5">
+                <Label text="Nombre Completo" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748B;"/>
+                <TextField fx:id="txtNombre" promptText="Ej: Juan Pérez" prefHeight="42" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- CEDULA -->
+            <VBox spacing="5">
+                <Label text="Cédula de Identidad" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748B;"/>
+                <TextField fx:id="txtCedula" promptText="Ej: 1234567890" prefHeight="42" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- EMAIL -->
+            <VBox spacing="5">
+                <Label text="Correo Electrónico" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748B;"/>
+                <TextField fx:id="txtEmail" promptText="Ej: juan@ejemplo.com" prefHeight="42" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- ALIAS -->
+            <VBox spacing="5">
+                <Label text="Alias" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748B;"/>
+                <TextField fx:id="txtAlias" promptText="Ej: juan123" prefHeight="42" maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- CIUDAD -->
+            <VBox spacing="5">
+                <Label text="Ciudad de Residencia" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748B;"/>
+                <TextField fx:id="txtCiudad" promptText="Ej: Guayaquil" prefHeight="42" maxWidth="Infinity"/>
+            </VBox>
+
+            <Region prefHeight="4"/>
+
+            <!-- BOTONES -->
+            <VBox spacing="10">
+                <Button text="Crear Mi Cuenta" onAction="#onBotonGuardarClick"
+                        styleClass="success-button" maxWidth="Infinity" prefHeight="48"
+                        style="-fx-font-size: 14px;" defaultButton="true"/>
+
+                <Button text="Volver al Login" onAction="#onBotonVolverClick"
+                        styleClass="button-secondary" maxWidth="Infinity" prefHeight="44"
+                        style="-fx-font-size: 13px;"/>
+            </VBox>
+
+            <!-- INFO -->
+            <HBox spacing="6" alignment="CENTER" style="-fx-padding: 8 0 0 0;">
+                <Circle radius="6" style="-fx-fill: #3B82F6;"/>
+                <Label text="Ingresa tus datos"
+                       style="-fx-text-fill: #64748B; -fx-font-size: 11px;"/>
+            </HBox>
+
+        </VBox>
+
+    </VBox>
+
+</ScrollPane>
